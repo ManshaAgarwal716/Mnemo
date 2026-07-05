@@ -1,5 +1,6 @@
 import uuid
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.documents.model import Document
@@ -8,7 +9,10 @@ from src.documents.schema import (
     DocumentCreate,
     DocumentUpdate,
 )
-
+from src.processing.service import processing_service
+from src.document_chunks.service import (
+    document_chunk_service,
+)
 
 class DocumentService:
 
@@ -32,10 +36,25 @@ class DocumentService:
             project_id=project_id,
         )
 
-        return await document_repository.create(
+        created_document = await document_repository.create(
             db,
             document,
         )
+
+        text = processing_service.extract_text(
+            created_document.file_path,
+        )
+
+        chunks = processing_service.chunk_text(
+            text,
+        )
+        await document_chunk_service.create_chunks(
+            db=db,
+            document_id=created_document.id,
+            chunks=chunks,
+        )
+
+        return created_document
 
     async def get_documents(
         self,
@@ -79,7 +98,6 @@ class DocumentService:
         update_data = document_data.model_dump(
             exclude_unset=True
         )
-
         for key, value in update_data.items():
             setattr(
                 document,
