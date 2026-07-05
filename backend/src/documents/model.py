@@ -10,7 +10,7 @@ from src.db.base import Base
 
 if TYPE_CHECKING:
     from src.projects.model import Project
-
+    from src.document_chunks.model import DocumentChunk
 
 class Document(Base):
     __tablename__ = "documents"
@@ -67,6 +67,11 @@ class Document(Base):
         back_populates="documents",
     )
     notes: Mapped[list["Note"]] = relationship(
+    back_populates="document",
+    cascade="all, delete-orphan",
+)
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
+    "DocumentChunk",
     back_populates="document",
     cascade="all, delete-orphan",
 )

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.db.database import get_db
 from src.users.dependencies import get_current_user
 from src.users.model import User
@@ -44,10 +43,11 @@ async def signup(
     response_model=TokenResponse,
 )
 async def login(
-    user_data: UserLogin,
+       user_data: UserLogin,
     db: AsyncSession = Depends(get_db),
 ):
     try:
+
         user, token = await user_service.login(
             db,
             user_data,
@@ -57,12 +57,14 @@ async def login(
             user=user,
             token=token,
         )
-
     except ValueError as e:
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
         )
+
+
 
 
 @router.get(

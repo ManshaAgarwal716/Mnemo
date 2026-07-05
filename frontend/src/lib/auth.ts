@@ -1,57 +1,71 @@
+import api from "@/lib/api";
 import { User } from "@/types";
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const mockUser: User = {
-  id: "user-1",
-  email: "researcher@mnemo.ai",
-  name: "Alex Chen",
-  avatar: undefined,
-};
 
 export async function login(
   email: string,
   password: string
 ): Promise<{ user: User; token: string }> {
-  await delay(600);
 
-  if (!email || !password) {
-    throw new Error("Email and password required");
-  }
+  const response = await api.post(
+    "/v1/auth/login",
+    {
+      email,
+      password,
+    }
+  );
 
-  const token = "mock_jwt_token_" + Date.now();
+  const data = response.data;
+  
+
+  localStorage.setItem(
+    "auth_token",
+    data.token
+  );
+
+ const me = await api.get(
+    "/v1/auth/me"
+  );
 
   return {
-    user: mockUser,
-    token,
+    user: me.data,
+    token: data.token,
   };
 }
+
 
 export async function signup(
   name: string,
   email: string,
   password: string
 ): Promise<{ user: User; token: string }> {
-  await delay(800);
 
-  if (!name || !email || !password) {
-    throw new Error("All fields required");
-  }
+  await api.post(
+    "/v1/auth/signup",
+    {
+      name,
+      email,
+      password,
+    }
+  );
 
-  const token = "mock_jwt_token_" + Date.now();
-
-  return {
-    user: { ...mockUser, name, email },
-    token,
-  };
+  return await login(
+    email,
+    password,
+  );
 }
 
-export async function logout(): Promise<void> {
-  await delay(200);
-  // Clear token in the store
+export async function logout() {
+
+  localStorage.removeItem(
+    "auth_token"
+  );
 }
 
 export async function getCurrentUser(): Promise<User> {
-  await delay(300);
-  return mockUser;
+
+  const response = await api.get(
+    "/v1/auth/me"
+  );
+
+  return response.data;
 }
