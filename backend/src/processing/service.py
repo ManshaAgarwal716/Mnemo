@@ -1,3 +1,5 @@
+from google.genai import types
+
 import fitz
 from google import genai
 from src.core.config import settings
@@ -49,5 +51,19 @@ class ProcessingService:
             )
 
         return chunks
+    def generate_embedding(
+    self,
+    text: str,
+) -> list[float]:
+
+        response = self.client.models.embed_content(
+            model="gemini-embedding-001",
+            contents=text,
+            config=types.EmbedContentConfig(
+            task_type="RETRIEVAL_DOCUMENT",
+        ),
+        )
+
+        return response.embeddings[0].values
 
 processing_service = ProcessingService()

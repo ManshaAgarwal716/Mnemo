@@ -1,6 +1,6 @@
 import uuid
-
-from sqlalchemy import ForeignKey, Integer, Text
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import ForeignKey, Integer, Text,Column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.documents.model import Document
@@ -37,3 +37,7 @@ class DocumentChunk(Base):
         "Document",
         back_populates="chunks",
     )
+    embedding: Mapped[list[float] | None] = mapped_column(
+    Vector(3072),
+    nullable=True,
+)
