@@ -54,16 +54,31 @@ class ProcessingService:
     def generate_embedding(
     self,
     text: str,
+    task_type: str = "RETRIEVAL_DOCUMENT",
 ) -> list[float]:
 
         response = self.client.models.embed_content(
             model="gemini-embedding-001",
             contents=text,
             config=types.EmbedContentConfig(
-            task_type="RETRIEVAL_DOCUMENT",
+            task_type=task_type,
         ),
         )
 
         return response.embeddings[0].values
+    def generate_embeddings(
+    self,
+    chunks: list[str],
+) -> list[list[float]]:
+        embeddings = []
+        for chunk in chunks:
+            embedding = self.generate_embedding(
+                chunk,
+            )
+            embeddings.append(
+                embedding,
+            )
+
+        return embeddings
 
 processing_service = ProcessingService()

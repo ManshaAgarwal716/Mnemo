@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.ai.schema import ChatResponse
 from src.core.config import settings
-
+from src.retrieval.service import retrieval_service
 from src.messages.enums import MessageRole
 from src.messages.schema import MessageCreate
 from src.messages.service import message_service
@@ -54,6 +54,7 @@ class AIService:
         self,
         history,
         prompt: str,
+        context: str,
     ) -> str:
 
         history.append(
@@ -61,7 +62,17 @@ class AIService:
                 "role": "user",
                 "parts": [
                     {
-                        "text": prompt,
+                        "text": f"""
+You are an AI research assistant.
+
+Use ONLY the following context to answer the user's question.
+
+Context:
+{context}
+
+Question:
+{prompt}
+""",
                     }
                 ],
             }
@@ -117,6 +128,17 @@ class AIService:
             conversation_id,
             prompt,
         )
+        conversation = await conversation_service.get_conversation(
+    db,
+    conversation_id,
+)
+
+        chunks = await retrieval_service.retrieve_chunks(
+            db=db,
+            project_id=conversation.project_id,
+            question=prompt,
+        )
+        context = "\n".join(chunk.content for chunk in chunks)
         history = await self.build_history(
             db,
             conversation_id,
@@ -124,6 +146,7 @@ class AIService:
         response = await self.generate(
             history,
             prompt,
+            context,
         )
         await self.save_ai_message(
             db,

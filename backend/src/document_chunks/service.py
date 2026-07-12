@@ -17,11 +17,13 @@ class DocumentChunkService:
         db: AsyncSession,
         document_id: UUID,
         chunks: list[str],
+        embeddings: list[list[float]],
     ):
 
         created_chunks = []
 
-        for index, chunk in enumerate(chunks):
+        for index, (chunk, embedding) in enumerate(
+          zip(chunks, embeddings)):
 
             created_chunk = await document_chunk_repository.create_chunk(
                 db=db,
@@ -29,6 +31,7 @@ class DocumentChunkService:
                 chunk_data=DocumentChunkCreate(
                     chunk_index=index,
                     content=chunk,
+                    embedding=embedding,
                 ),
             )
 

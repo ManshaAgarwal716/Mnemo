@@ -12,12 +12,14 @@ class DocumentChunkRepository:
         db: AsyncSession,
         document_id,
         chunk_data: DocumentChunkCreate,
+        
     ) -> DocumentChunk:
 
         chunk = DocumentChunk(
             document_id=document_id,
             chunk_index=chunk_data.chunk_index,
             content=chunk_data.content,
+            embedding=chunk_data.embedding,
         )
 
         db.add(chunk)
