@@ -48,10 +48,14 @@ class DocumentService:
         chunks = processing_service.chunk_text(
             text,
         )
+        embeddings = processing_service.generate_embeddings(
+    chunks,
+)
         await document_chunk_service.create_chunks(
             db=db,
             document_id=created_document.id,
             chunks=chunks,
+            embeddings=embeddings,
         )
 
         return created_document

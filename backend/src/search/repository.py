@@ -65,4 +65,5 @@ class SearchRepository:
         return result.scalars().all()
 
 
+
 search_repository = SearchRepository()

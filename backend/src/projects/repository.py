@@ -51,6 +51,21 @@ class ProjectRepository:
         )
 
         return result.scalar_one_or_none()
+    async def get_by_name(
+    self,
+    db: AsyncSession,
+    owner_id: uuid.UUID,
+    name: str,
+) -> Project | None:
+
+        result = await db.execute(
+            select(Project).where(
+                Project.owner_id == owner_id,
+                Project.name == name,
+            )
+        )
+
+        return result.scalar_one_or_none()
 
 
     async def update(
