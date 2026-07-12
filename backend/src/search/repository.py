@@ -17,7 +17,7 @@ class SearchRepository:
         statement = (
             select(Project)
             .where(
-                Project.title.ilike(f"%{query}%")
+                Project.name.ilike(f"%{query}%")
             )
         )
 

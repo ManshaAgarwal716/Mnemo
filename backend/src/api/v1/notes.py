@@ -75,6 +75,7 @@ async def get_notes(
 async def get_note(
     note_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -100,6 +101,7 @@ async def update_note(
     note_id: uuid.UUID,
     note_data: NoteUpdate,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -125,6 +127,7 @@ async def update_note(
 async def delete_note(
     note_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:

@@ -70,6 +70,7 @@ async def get_conversations(
 async def get_conversation(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -90,11 +91,13 @@ async def get_conversation(
 @router.patch(
     "/{conversation_id}",
     response_model=ConversationResponse,
+    
 )
 async def update_conversation(
     conversation_id: uuid.UUID,
     conversation_data: ConversationUpdate,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -120,6 +123,7 @@ async def update_conversation(
 async def delete_conversation(
     conversation_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:

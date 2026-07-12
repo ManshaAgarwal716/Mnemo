@@ -70,6 +70,7 @@ async def get_messages(
 async def get_message(
     message_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -95,6 +96,7 @@ async def update_message(
     message_id: uuid.UUID,
     message_data: MessageUpdate,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
@@ -120,6 +122,7 @@ async def update_message(
 async def delete_message(
     message_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
