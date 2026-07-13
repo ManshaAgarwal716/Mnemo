@@ -1,43 +1,111 @@
+import api from "@/lib/api";
 import { Document } from "@/types";
-import { mockDocuments } from "@/mock/documents";
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function getDocuments(projectId: string): Promise<Document[]> {
-  await delay(250);
-  return mockDocuments.filter((doc) => doc.projectId === projectId);
+  const response = await api.get(`/documents/project/${projectId}`);
+
+  return response.data.map((doc: any) => ({
+    id: doc.id,
+    projectId: doc.project_id,
+    title: doc.title,
+    fileName: doc.file_name,
+    filePath: `http://localhost:8000/${doc.file_path}`,
+    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    fileSize: doc.file_size,
+    updatedAt: doc.updated_at,
+  }));
 }
 
 export async function getDocument(id: string): Promise<Document> {
-  await delay(200);
-  const doc = mockDocuments.find((d) => d.id === id);
-  if (!doc) throw new Error("Document not found");
-  return doc;
+  const response = await api.get(`/documents/${id}`);
+
+  const doc = response.data;
+
+  return {
+    id: doc.id,
+    projectId: doc.project_id,
+    title: doc.title,
+    fileName: doc.file_name,
+    filePath: `http://localhost:8000/${doc.file_path}`,
+    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    fileSize: doc.file_size,
+    updatedAt: doc.updated_at,
+  };
 }
 
 export async function uploadDocument(data: {
   projectId: string;
   name: string;
-  type: "pdf" | "note" | "web";
-  file?: File;
+  file: File;
 }): Promise<Document> {
-  await delay(800);
-  const newDoc: Document = {
-    id: `doc-${Date.now()}`,
-    projectId: data.projectId,
-    name: data.name,
-    type: data.type,
-    updatedAt: new Date().toISOString(),
-    pageCount: data.type === "pdf" ? 10 : undefined,
+  const formData = new FormData();
+
+  formData.append("project_id", data.projectId);
+  formData.append("title", data.name);
+  formData.append("file", data.file);
+
+  const response = await api.post(
+    "/documents/upload",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  const doc = response.data;
+
+  return {
+    id: doc.id,
+    projectId: doc.project_id,
+    title: doc.title,
+    fileName: doc.file_name,
+    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    filePath: `http://localhost:8000/${doc.file_path}`,
+    fileSize: doc.file_size,
+    updatedAt: doc.updated_at,
   };
-  mockDocuments.push(newDoc);
-  return newDoc;
+}
+
+export async function renameDocument(
+  id: string,
+  title: string
+): Promise<Document> {
+  const response = await api.patch(`/documents/${id}`, {
+    title,
+  });
+
+  const doc = response.data;
+
+  return {
+    id: doc.id,
+    projectId: doc.project_id,
+    title: doc.title,
+    fileName: doc.file_name,
+    filePath: `http://localhost:8000/${doc.file_path}`,
+    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    fileSize: doc.file_size,
+    updatedAt: doc.updated_at,
+  };
 }
 
 export async function deleteDocument(id: string): Promise<void> {
-  await delay(300);
-  const index = mockDocuments.findIndex((d) => d.id === id);
-  if (index !== -1) {
-    mockDocuments.splice(index, 1);
-  }
+  await api.delete(`/documents/${id}`);
+}
+
+export function downloadDocument(
+  filePath: string,
+  fileName?: string
+) {
+  const link = document.createElement("a");
+
+  link.href = filePath;
+  link.download = fileName ?? "";
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
 }

@@ -16,21 +16,22 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/lib/projects";
-
+import { useProjectModalStore } from "@/store/projectModalStore";
+import { useWorkspaceStore } from "@/store/workspaceStore";
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Workspace", href: "/workspace", icon: FolderKanban },
-  { label: "AI assistant", href: "/ai", icon: MessageSquare },
   { label: "Search", href: "/search", icon: Search },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { activeProjectId } = useWorkspaceStore();
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
   });
-
+const open = useProjectModalStore((state) => state.openCreate);
   return (
     <aside className="w-56 border-r border-gray-200 bg-white flex flex-col h-screen">
       <div className="p-4 border-b border-gray-200">
@@ -62,6 +63,22 @@ export function Sidebar() {
               </Link>
             );
           })}
+          <Link
+  href={
+    activeProjectId
+      ? `/workspace/${activeProjectId}/ai`
+      : "/dashboard"
+  }
+  className={cn(
+    "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+    pathname.includes("/ai")
+      ? "bg-primary-light text-primary"
+      : "text-gray-700 hover:bg-gray-100"
+  )}
+>
+  <MessageSquare className="w-4 h-4" />
+  AI Assistant
+</Link>
         </div>
 
         <div>
@@ -93,13 +110,13 @@ export function Sidebar() {
               </Link>
             ))}
           </div>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 px-3 py-2 mt-2 text-sm text-primary hover:bg-primary-light rounded transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            New project
-          </Link>
+          <button
+  onClick={open}
+  className="flex w-full items-center gap-2 px-3 py-2 mt-2 text-sm text-primary hover:bg-primary-light rounded transition-colors"
+>
+  <Plus className="w-4 h-4" />
+  New project
+</button>
         </div>
       </nav>
 

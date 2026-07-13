@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import { ConversationHistory } from "@/features/ai/ConversationHistory";
 import { ChatThread } from "@/features/ai/ChatThread";
 import { ChatInput } from "@/features/ai/ChatInput";
@@ -9,40 +10,47 @@ import { QuickActions } from "@/features/ai/QuickActions";
 import { Badge } from "@/components/ui/Badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createConversation } from "@/lib/chat";
+import { useWorkspaceStore } from "@/store/workspaceStore";
 
 export default function AiPage() {
-  const [activeConversationId, setActiveConversationId] = useState<string | null>("conv-1");
+  const params = useParams();
+  console.log("params =", params);
+  const projectId = params.projectId as string;
+ const {
+  activeConversationId,
+  setActiveConversation,
+} = useWorkspaceStore();
   const queryClient = useQueryClient();
 
   const createConvMutation = useMutation({
-    mutationFn: () => createConversation({ title: "New conversation" }),
-    onSuccess: (newConv) => {
-      setActiveConversationId(newConv.id);
-      queryClient.invalidateQueries({ queryKey: ["conversations"] });
-    },
+    mutationFn: () => createConversation({ projectId, title: "New conversation" }),
+   onSuccess: (newConv) => {
+  setActiveConversation(newConv.id);
+
+  queryClient.invalidateQueries({
+    queryKey: ["conversations", projectId],
+  });
+},
   });
 
   return (
     <div className="flex h-full">
       <div className="w-[220px] border-r border-gray-200 bg-white">
         <ConversationHistory
+          projectId={projectId}
           activeConversationId={activeConversationId}
-          onConversationSelect={setActiveConversationId}
+          onConversationSelect={setActiveConversation}
           onNewConversation={() => createConvMutation.mutate()}
         />
       </div>
 
       <div className="flex-1 flex flex-col">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 bg-white">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-medium text-gray-900">
-              How does self-attention work?
+              AI Assistant
             </h1>
             <div className="flex items-center gap-2">
-              <Badge variant="gray" size="sm">
-                Transformer architecture research
-              </Badge>
               <Badge variant="teal" size="sm">
                 Memory active
               </Badge>
@@ -50,7 +58,6 @@ export default function AiPage() {
           </div>
         </div>
 
-        {/* Chat area */}
         {activeConversationId ? (
           <>
             <ChatThread conversationId={activeConversationId} />

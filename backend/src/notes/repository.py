@@ -22,15 +22,15 @@ class NoteRepository:
 
         return note
 
-    async def get_all_by_document(
+    async def get_all_by_project(
         self,
         db: AsyncSession,
-        document_id: uuid.UUID,
+        project_id: uuid.UUID,
     ) -> list[Note]:
 
         result = await db.execute(
             select(Note).where(
-                Note.document_id == document_id
+                Note.project_id == project_id
             )
         )
 

@@ -10,10 +10,7 @@ class NoteCreate(BaseModel):
         max_length=255,
     )
 
-    content: str = Field(
-        min_length=1,
-    )
-
+    content: str = Field(default="")
 
 class NoteUpdate(BaseModel):
     title: str | None = None
@@ -24,7 +21,7 @@ class NoteResponse(BaseModel):
     id: uuid.UUID
     title: str
     content: str
-    document_id: uuid.UUID
+    project_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
 

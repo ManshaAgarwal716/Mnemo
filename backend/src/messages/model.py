@@ -5,7 +5,7 @@ from sqlalchemy import Enum
 
 from src.messages.enums import MessageRole
 from sqlalchemy import DateTime, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.base import Base
@@ -47,3 +47,8 @@ class Message(Base):
     conversation: Mapped["Conversation"] = relationship(
         back_populates="messages",
     )
+    sources: Mapped[list | None] = mapped_column(
+    JSON,
+    nullable=True,
+    default=list,
+)
