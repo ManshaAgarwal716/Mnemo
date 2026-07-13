@@ -16,15 +16,14 @@ export interface Project {
 }
 
 export interface Document {
-  id: string;
-  projectId: string;
-  name: string;
-  type: "pdf" | "note" | "web";
-  content?: string;
-  url?: string;
-  pageCount?: number;
-  updatedAt: string;
-  tags?: string[];
+    id: string;
+    projectId: string;
+    title: string;
+    fileName: string;
+    filePath: string;
+    fileType: "pdf" | "web";
+    fileSize: number;
+    updatedAt: string;
 }
 
 export interface Note {
@@ -32,6 +31,7 @@ export interface Note {
   projectId: string;
   title: string;
   content: string;
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -42,12 +42,18 @@ export interface Source {
   snippet?: string;
 }
 
+export interface MessageSource {
+  document_id: string;
+  title: string;
+  file_name: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
   role: "user" | "assistant";
   content: string;
-  sources?: Source[];
+  sources?: MessageSource[];
   timestamp: string;
 }
 

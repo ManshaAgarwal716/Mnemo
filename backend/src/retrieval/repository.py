@@ -18,22 +18,20 @@ class RetrievalRepository:
     ):
 
         statement = (
-            select(DocumentChunk)
-            .join(Document)
-            .where(
-                Document.project_id == project_id
-            )
-            .order_by(
-                DocumentChunk.embedding.cosine_distance(
-                    query_embedding
-                )
-            )
-            .limit(limit)
-        )
+    select(DocumentChunk, Document)
+    .join(Document)
+    .where(
+        Document.project_id == project_id
+    )
+    .order_by(
+        DocumentChunk.embedding.cosine_distance(query_embedding)
+    )
+    .limit(limit)
+)
 
         result = await db.execute(statement)
 
-        return result.scalars().all()
+        return result.all()
 
 
 retrieval_repository = RetrievalRepository()

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.notes.model import Note
+
 from src.db.base import Base
 
 if TYPE_CHECKING:
@@ -66,10 +66,7 @@ class Document(Base):
     project: Mapped["Project"] = relationship(
         back_populates="documents",
     )
-    notes: Mapped[list["Note"]] = relationship(
-    back_populates="document",
-    cascade="all, delete-orphan",
-)
+
     chunks: Mapped[list["DocumentChunk"]] = relationship(
     "DocumentChunk",
     back_populates="document",

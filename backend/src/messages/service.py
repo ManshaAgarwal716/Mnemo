@@ -22,6 +22,7 @@ class MessageService:
         message = Message(
             role=message_data.role,
             content=message_data.content,
+            sources=message_data.sources,
             conversation_id=conversation_id,
         )
 

@@ -6,7 +6,7 @@ from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING
-
+from src.notes.model import Note
 if TYPE_CHECKING:
     from src.documents.model import Document
 from src.db.base import Base
@@ -54,6 +54,10 @@ class Project(Base):
     cascade="all, delete-orphan",
 )
         conversations: Mapped[list["Conversation"]] = relationship(
+    back_populates="project",
+    cascade="all, delete-orphan",
+)
+        notes: Mapped[list["Note"]] = relationship(
     back_populates="project",
     cascade="all, delete-orphan",
 )

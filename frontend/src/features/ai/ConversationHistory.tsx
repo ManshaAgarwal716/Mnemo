@@ -9,19 +9,21 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface ConversationHistoryProps {
+  projectId: string;
   activeConversationId: string | null;
   onConversationSelect: (id: string) => void;
   onNewConversation: () => void;
 }
 
 export function ConversationHistory({
+  projectId,
   activeConversationId,
   onConversationSelect,
   onNewConversation,
 }: ConversationHistoryProps) {
   const { data: conversations, isLoading } = useQuery({
-    queryKey: ["conversations"],
-    queryFn: getConversations,
+    queryKey: ["conversations", projectId],
+    queryFn: () => getConversations(projectId),
   });
 
   if (isLoading) {

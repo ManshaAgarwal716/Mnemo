@@ -9,9 +9,11 @@ from src.api.v1.notes import router as note_router
 from src.api.v1.ai import router as ai_router
 from src.health.routes import router as health_router
 from src.api.v1.search import router as search_router
+from fastapi.staticfiles import StaticFiles
 app = FastAPI(
     title="Mnemo API",
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -21,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth_router,prefix="/api/v1",)
 app.include_router(project_router,prefix="/api/v1",)

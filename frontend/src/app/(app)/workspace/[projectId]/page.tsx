@@ -14,7 +14,7 @@ import { FileText } from "lucide-react";
 export default function WorkspaceProjectPage() {
   const params = useParams();
   const projectId = params.projectId as string;
-  const { setActiveProject, activeTabId, tabs } = useWorkspaceStore();
+  const { setActiveProject, activeTabId, tabs,activeConversationId, } = useWorkspaceStore();
 
   useEffect(() => {
     setActiveProject(projectId);
@@ -31,9 +31,14 @@ export default function WorkspaceProjectPage() {
         
         {activeTab ? (
           activeTab.type === "note" ? (
-            <NoteEditor />
+            <NoteEditor
+  noteId={activeTab.documentId}
+  projectId={projectId}
+/>
           ) : (
-            <PdfViewer />
+            <PdfViewer
+  documentId={activeTab.documentId}
+/>
           )
         ) : (
           <div className="flex-1 flex items-center justify-center bg-gray-50">
@@ -46,7 +51,16 @@ export default function WorkspaceProjectPage() {
         )}
       </div>
 
-      <AiPanel conversationId="conv-1" mode="compact" />
+     {activeConversationId ? (
+  <AiPanel
+    conversationId={activeConversationId}
+    mode="compact"
+  />
+) : (
+  <div className="w-[270px] border-l border-gray-200 bg-white flex items-center justify-center text-sm text-gray-500">
+    Start a conversation from AI Assistant
+  </div>
+)}
     </div>
   );
 }

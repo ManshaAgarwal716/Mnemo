@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.base import Base
 
 if TYPE_CHECKING:
-    from src.documents.model import Document
+    from src.projects.model import Project
 
 
 class Note(Base):
@@ -31,9 +31,9 @@ class Note(Base):
         nullable=False,
     )
 
-    document_id: Mapped[uuid.UUID] = mapped_column(
+    project_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("documents.id"),
+        ForeignKey("projects.id"),
         nullable=False,
     )
 
@@ -48,6 +48,6 @@ class Note(Base):
         onupdate=datetime.utcnow,
     )
 
-    document: Mapped["Document"] = relationship(
+    project: Mapped["Project"] = relationship(
         back_populates="notes",
     )

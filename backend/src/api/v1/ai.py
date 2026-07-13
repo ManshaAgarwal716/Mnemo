@@ -10,6 +10,7 @@ from src.ai.schema import (
     ChatRequest,
     ChatResponse,
 )
+import traceback
 
 from src.ai.service import ai_service
 
@@ -41,8 +42,9 @@ async def chat(
         )
 
     except Exception as e:
+     traceback.print_exc()
 
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        )
+     raise HTTPException(
+        status_code=500,
+        detail=repr(e),
+    )

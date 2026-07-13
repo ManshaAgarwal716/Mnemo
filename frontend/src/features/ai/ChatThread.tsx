@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getConversation } from "@/lib/chat";
+import { getMessages } from "@/lib/messages";
 import { MessageBubble } from "./MessageBubble";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Avatar } from "@/components/ui/Avatar";
@@ -16,9 +16,9 @@ export function ChatThread({ conversationId }: ChatThreadProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { streamingText, isStreaming } = useChatStore();
 
-  const { data: conversation, isLoading } = useQuery({
-    queryKey: ["conversation", conversationId],
-    queryFn: () => getConversation(conversationId),
+  const { data: messages = [], isLoading } = useQuery({
+    queryKey: ["messages", conversationId],
+    queryFn: () => getMessages(conversationId),
     enabled: !!conversationId,
   });
 
@@ -26,7 +26,7 @@ export function ChatThread({ conversationId }: ChatThreadProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [conversation?.messages, streamingText]);
+  }, [messages, streamingText]);
 
   if (isLoading) {
     return (
@@ -42,7 +42,7 @@ export function ChatThread({ conversationId }: ChatThreadProps) {
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-      {conversation?.messages.map((message) => (
+      {messages.map((message) => (
         <MessageBubble key={message.id} message={message} />
       ))}
 

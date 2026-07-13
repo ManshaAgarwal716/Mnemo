@@ -15,14 +15,14 @@ class NoteService:
     async def create_note(
         self,
         db: AsyncSession,
-        document_id: uuid.UUID,
+        project_id: uuid.UUID,
         note_data: NoteCreate,
     ) -> Note:
 
         note = Note(
             title=note_data.title,
             content=note_data.content,
-            document_id=document_id,
+            project_id=project_id,
         )
 
         return await note_repository.create(
@@ -33,12 +33,12 @@ class NoteService:
     async def get_notes(
         self,
         db: AsyncSession,
-        document_id: uuid.UUID,
+        project_id: uuid.UUID,
     ):
 
-        return await note_repository.get_all_by_document(
+        return await note_repository.get_all_by_project(
             db,
-            document_id,
+            project_id,
         )
 
     async def get_note(
@@ -70,7 +70,7 @@ class NoteService:
         )
 
         update_data = note_data.model_dump(
-            exclude_unset=True
+            exclude_unset=True,
         )
 
         for key, value in update_data.items():

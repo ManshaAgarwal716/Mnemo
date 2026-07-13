@@ -1,19 +1,14 @@
+import api from "@/lib/api";
 import { Project } from "@/types";
-import { mockProjects } from "@/mock/projects";
-
-// Simulate network delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function getProjects(): Promise<Project[]> {
-  await delay(300);
-  return mockProjects;
+  const response = await api.get("/projects");
+  return response.data;
 }
 
 export async function getProject(id: string): Promise<Project> {
-  await delay(200);
-  const project = mockProjects.find((p) => p.id === id);
-  if (!project) throw new Error("Project not found");
-  return project;
+  const response = await api.get(`/projects/${id}`);
+  return response.data;
 }
 
 export async function createProject(data: {
@@ -21,22 +16,22 @@ export async function createProject(data: {
   description: string;
   color: string;
 }): Promise<Project> {
-  await delay(400);
-  const newProject: Project = {
-    id: `project-${Date.now()}`,
-    ...data,
-    documentCount: 0,
-    updatedAt: new Date().toISOString(),
-    tags: [],
-  };
-  mockProjects.push(newProject);
-  return newProject;
+  const response = await api.post("/projects", data);
+  return response.data;
+}
+
+export async function updateProject(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+    color?: string;
+  }
+): Promise<Project> {
+  const response = await api.patch(`/projects/${id}`, data);
+  return response.data;
 }
 
 export async function deleteProject(id: string): Promise<void> {
-  await delay(300);
-  const index = mockProjects.findIndex((p) => p.id === id);
-  if (index !== -1) {
-    mockProjects.splice(index, 1);
-  }
+  await api.delete(`/projects/${id}`);
 }

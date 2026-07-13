@@ -4,12 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/lib/projects";
 import { ProjectCard } from "./ProjectCard";
 import { Card } from "@/components/ui/Card";
-import { Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FolderKanban } from "lucide-react";
+import { FolderKanban, Plus } from "lucide-react";
+import { useProjectModalStore } from "@/store/projectModalStore";
 
 export function ProjectsGrid() {
+const open = useProjectModalStore((state) => state.openCreate);
+
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
@@ -41,7 +43,7 @@ export function ProjectsGrid() {
         title="No projects yet"
         description="Create your first project to start organizing your research"
         actionLabel="Create project"
-        onAction={() => {}}
+        onAction={open}
       />
     );
   }
@@ -51,16 +53,19 @@ export function ProjectsGrid() {
       {projects.map((project) => (
         <ProjectCard key={project.id} project={project} />
       ))}
+
       <Card
         hover
-        onClick={() => {}}
+        onClick={open}
         className="p-5 border-dashed border-2 flex items-center justify-center min-h-[140px]"
       >
         <div className="text-center">
           <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
             <Plus className="w-5 h-5 text-gray-600" />
           </div>
-          <p className="text-sm font-medium text-gray-700">New project</p>
+          <p className="text-sm font-medium text-gray-700">
+            New project
+          </p>
         </div>
       </Card>
     </div>

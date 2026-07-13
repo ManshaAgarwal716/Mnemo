@@ -3,9 +3,14 @@ import { Tab } from "@/types";
 
 interface WorkspaceState {
   activeProjectId: string | null;
+  activeConversationId: string | null;
+
   tabs: Tab[];
   activeTabId: string | null;
+
   setActiveProject: (projectId: string) => void;
+  setActiveConversation: (conversationId: string | null) => void;
+
   addTab: (tab: Tab) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -14,10 +19,13 @@ interface WorkspaceState {
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   activeProjectId: null,
+  activeConversationId: null,
   tabs: [],
   activeTabId: null,
 
   setActiveProject: (projectId) => set({ activeProjectId: projectId }),
+  setActiveConversation: (conversationId) =>
+  set({ activeConversationId: conversationId }),
 
   addTab: (tab) =>
     set((state) => {
@@ -54,4 +62,5 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveTab: (tabId) => set({ activeTabId: tabId }),
 
   clearTabs: () => set({ tabs: [], activeTabId: null }),
+  
 }));
