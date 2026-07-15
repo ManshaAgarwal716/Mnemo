@@ -71,3 +71,43 @@ export async function updateConversation(
 export async function deleteConversation(id: string): Promise<void> {
   await api.delete(`/conversations/${id}`);
 }
+export interface SummaryResponse {
+  overview: string;
+  key_ideas: string[];
+  important_concepts: string[];
+  action_items: string[];
+  questions_remaining: string[];
+}
+
+export interface RelatedItem {
+  id: string;
+  title: string;
+  snippet: string;
+  similarity: number;
+}
+
+export interface RelatedResponse {
+  documents: RelatedItem[];
+  notes: RelatedItem[];
+  conversations: RelatedItem[];
+}
+
+export async function getSummary(
+  conversationId: string,
+): Promise<SummaryResponse> {
+  const response = await api.get(
+    `/ai/summary/${conversationId}`,
+  );
+
+  return response.data;
+}
+
+export async function getRelated(
+  conversationId: string,
+): Promise<RelatedResponse> {
+  const response = await api.get(
+    `/ai/related/${conversationId}`,
+  );
+
+  return response.data;
+}

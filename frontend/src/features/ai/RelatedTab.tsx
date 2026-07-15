@@ -1,50 +1,70 @@
 "use client";
 
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { useQuery } from "@tanstack/react-query";
 import { FileText } from "lucide-react";
 
-const relatedDocs = [
-  {
-    id: "1",
-    name: "BERT: Pre-training Deep Bidirectional Transformers",
-    match: 87,
-    snippet:
-      "BERT is designed to pretrain deep bidirectional representations by jointly conditioning on both left and right context...",
-  },
-  {
-    id: "2",
-    name: "GPT-3: Language Models are Few-Shot Learners",
-    match: 82,
-    snippet:
-      "Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text...",
-  },
-  {
-    id: "3",
-    name: "My research notes on self-attention",
-    match: 76,
-    snippet:
-      "Self-attention mechanisms allow the model to weigh the importance of different parts of the input when processing each element...",
-  },
-];
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { getRelated } from "@/lib/chat";
 
-export function RelatedTab() {
+interface RelatedTabProps {
+  conversationId: string;
+}
+
+export function RelatedTab({
+  conversationId,
+}: RelatedTabProps) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["related", conversationId],
+    queryFn: () => getRelated(conversationId),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="p-4 text-sm text-gray-500">
+        Finding related content...
+      </div>
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const items = [
+    ...data.documents,
+    ...data.notes,
+    ...data.conversations,
+  ];
+
   return (
-    <div className="p-4 space-y-3 overflow-y-auto">
-      {relatedDocs.map((doc) => (
-        <Card key={doc.id} hover className="p-4 cursor-pointer">
-          <div className="flex items-start gap-2 mb-2">
-            <FileText className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <h4 className="text-sm font-medium text-gray-900 line-clamp-2">
-                  {doc.name}
+    <div className="space-y-3 overflow-y-auto p-4">
+      {items.map((item) => (
+        <Card
+          key={item.id}
+          hover
+          className="cursor-pointer p-4"
+        >
+          <div className="mb-2 flex items-start gap-2">
+            <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
+
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-start justify-between gap-2">
+                <h4 className="line-clamp-2 text-sm font-medium">
+                  {item.title}
                 </h4>
-                <Badge variant="outline" size="sm">
-                  {doc.match}%
+
+                <Badge
+                  variant="outline"
+                  size="sm"
+                >
+                  {Math.round(item.similarity * 100)}%
                 </Badge>
               </div>
-              <p className="text-xs text-gray-600 line-clamp-2">{doc.snippet}</p>
+
+              <p className="line-clamp-2 text-xs text-gray-600">
+                {item.snippet}
+              </p>
             </div>
           </div>
         </Card>
