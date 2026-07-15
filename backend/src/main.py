@@ -9,6 +9,7 @@ from src.api.v1.notes import router as note_router
 from src.api.v1.ai import router as ai_router
 from src.health.routes import router as health_router
 from src.api.v1.search import router as search_router
+from src.api.v1.dashboard import router as dashboard_router
 from fastapi.staticfiles import StaticFiles
 app = FastAPI(
     title="Mnemo API",
@@ -33,6 +34,7 @@ app.include_router(message_router,prefix="/api/v1",)
 app.include_router(ai_router,prefix="/api/v1",)
 app.include_router(note_router,prefix="/api/v1",)
 app.include_router(search_router,prefix="/api/v1",)
+app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(health_router,prefix="/api/v1",)
 
 @app.get("/")

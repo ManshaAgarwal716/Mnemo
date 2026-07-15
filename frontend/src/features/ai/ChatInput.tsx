@@ -27,19 +27,12 @@ export function ChatInput({ conversationId }: ChatInputProps) {
       setIsStreaming(true);
       setStreamingText("");
 
-      // Backend handles:
-      // 1. Saving user message
-      // 2. RAG retrieval
-      // 3. Gemini response
-      // 4. Saving assistant message
       const response = await api.post("/ai/chat", {
         conversation_id: conversationId,
         message,
       });
 
       const aiResponse = response.data.response;
-
-      // Temporary fake streaming animation
       const words = aiResponse.split(" ");
 
       for (const word of words) {
@@ -76,7 +69,6 @@ export function ChatInput({ conversationId }: ChatInputProps) {
     setInput("");
   };
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";

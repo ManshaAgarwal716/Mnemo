@@ -1,45 +1,91 @@
 "use client";
 
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { FileText, MessageSquare, Database } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  FolderKanban,
+  FileText,
+  StickyNote,
+  MessageSquare,
+} from "lucide-react";
 
-const stats = [
-  {
-    label: "Documents indexed",
-    value: "127",
-    icon: FileText,
-  },
-  {
-    label: "AI conversations",
-    value: "43",
-    icon: MessageSquare,
-    delta: "+8 this week",
-  },
-  {
-    label: "Embeddings stored",
-    value: "12.4K",
-    icon: Database,
-  },
-];
+import { Card } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { getDashboard } from "@/lib/dashboard";
 
 export function StatsRow() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: getDashboard,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {[1, 2, 3, 4].map((item) => (
+          <Card key={item} className="p-5">
+            <Skeleton className="h-24 w-full" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  const stats = [
+    {
+      label: "Projects",
+      value: data?.stats.projects ?? 0,
+      icon: FolderKanban,
+      bg: "bg-purple-100",
+      text: "text-purple-600",
+    },
+    {
+      label: "Documents",
+      value: data?.stats.documents ?? 0,
+      icon: FileText,
+      bg: "bg-blue-100",
+      text: "text-blue-600",
+    },
+    {
+      label: "Notes",
+      value: data?.stats.notes ?? 0,
+      icon: StickyNote,
+      bg: "bg-yellow-100",
+      text: "text-yellow-600",
+    },
+    {
+      label: "Conversations",
+      value: data?.stats.conversations ?? 0,
+      icon: MessageSquare,
+      bg: "bg-green-100",
+      text: "text-green-600",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => (
-        <Card key={stat.label} className="p-5">
-          <div className="flex items-start justify-between">
+        <Card
+          key={stat.label}
+          hover
+          className="p-5 transition-all duration-200"
+        >
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-              <p className="text-2xl font-medium text-gray-900">{stat.value}</p>
-              {stat.delta && (
-                <Badge variant="teal" className="mt-2">
-                  {stat.delta}
-                </Badge>
-              )}
+              <p className="mb-2 text-sm font-medium text-gray-500">
+                {stat.label}
+              </p>
+
+              <h2 className="text-4xl font-bold text-gray-900">
+                {stat.value}
+              </h2>
             </div>
-            <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center">
-              <stat.icon className="w-5 h-5 text-gray-600" />
+
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl ${stat.bg}`}
+            >
+              <stat.icon
+                className={`h-7 w-7 ${stat.text}`}
+              />
             </div>
           </div>
         </Card>
