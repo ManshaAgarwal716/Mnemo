@@ -16,7 +16,10 @@ export default function SearchPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["search", debouncedQuery, activeFilter],
-    queryFn: () => semanticSearch(debouncedQuery, activeFilter),
+    queryFn: () =>semanticSearch(
+    debouncedQuery,
+    activeFilter,
+  ),
     enabled: debouncedQuery.length > 2,
   });
 

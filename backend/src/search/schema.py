@@ -1,15 +1,42 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Literal
 
-from src.projects.schema import ProjectResponse
-from src.documents.schema import DocumentResponse
-from src.notes.schema import NoteResponse
+from pydantic import BaseModel
 
 
 class SearchRequest(BaseModel):
     query: str
 
+    filter: Literal[
+        "all",
+        "project",
+        "document",
+        "note",
+        "conversation",
+    ] = "all"
+
+
+class SearchResult(BaseModel):
+    id: str
+    type: Literal[
+        "project",
+        "document",
+        "note",
+        "conversation",
+    ]
+
+    title: str
+    snippet: str
+
+    project_id: str | None = None
+
+    score: float = 100
+
+    tags: list[str] = []
+
+    created_at: datetime
+
 
 class SearchResponse(BaseModel):
-    projects: list[ProjectResponse]
-    documents: list[DocumentResponse]
-    notes: list[NoteResponse]
+    ai_answer: str = ""
+    results: list[SearchResult]

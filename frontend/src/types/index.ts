@@ -67,14 +67,17 @@ export interface Conversation {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface SearchResult {
   id: string;
-  type: "pdf" | "note" | "conversation";
+  type:
+    | "project"
+    | "document"
+    | "note"
+    | "conversation";
   title: string;
   snippet: string;
   matchPercentage: number;
-  tags?: string[];
+  tags: string[];
   timestamp: string;
   projectId?: string;
 }

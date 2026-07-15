@@ -31,7 +31,6 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           className="w-full pl-12 pr-32 py-4 text-base border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         />
         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          <Badge variant="primary">Semantic</Badge>
           {query && (
             <button
               onClick={handleClear}

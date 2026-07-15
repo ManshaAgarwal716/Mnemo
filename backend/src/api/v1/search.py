@@ -32,6 +32,8 @@ async def search(
 ):
 
     return await search_service.search(
-        db=db,
-        query=request.query,
-    )
+    db=db,
+    current_user=current_user,
+    query=request.query,
+    filter=request.filter,
+)
