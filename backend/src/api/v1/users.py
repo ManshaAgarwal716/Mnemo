@@ -8,7 +8,7 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.database import get_db
-
+from src.users.schema import DeleteAccountRequest
 from src.users.dependencies import get_current_user
 from src.users.model import User
 
@@ -78,6 +78,30 @@ async def change_password(
         }
 
     except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+@router.delete("/me")
+async def delete_account(
+    request: DeleteAccountRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+
+        await user_service.delete_account(
+            db=db,
+            current_user=current_user,
+            password=request.password,
+        )
+
+        return {
+            "message": "Account deleted successfully.",
+        }
+
+    except ValueError as e:
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),

@@ -7,9 +7,11 @@ from src.users.schema import (
     UserUpdate,
     PasswordUpdate,
 )
-
+from src.projects.repository import project_repository
 from src.users.repository import user_repository
+import os
 
+from src.documents.repository import document_repository
 from src.core.security import (
     hash_password,
     verify_password,
@@ -112,6 +114,47 @@ class UserService:
         )
 
         return await user_repository.update(
+            db,
+            current_user,
+        )
+    async def delete_account(
+        self,
+        db: AsyncSession,
+        current_user: User,
+        password: str,
+    ) -> None:
+
+        if not verify_password(
+            password,
+            current_user.hashed_password,
+        ):
+            raise ValueError(
+                "Incorrect password."
+            )
+
+        projects = await project_repository.get_all(
+    db,
+    current_user.id,
+)
+
+        for project in projects:
+
+            documents = await document_repository.get_all_by_project(
+                db,
+                project.id,
+            )
+
+            for document in documents:
+
+                if (
+                    document.file_path
+                    and os.path.exists(document.file_path)
+                ):
+                    os.remove(
+                        document.file_path
+                    )
+
+        await user_repository.delete(
             db,
             current_user,
         )
