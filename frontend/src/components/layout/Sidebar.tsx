@@ -121,14 +121,33 @@ const open = useProjectModalStore((state) => state.openCreate);
       </nav>
 
       <div className="p-3 border-t border-gray-200 space-y-1">
-        <button className="flex items-center gap-3 px-3 py-2 w-full rounded text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-          <Settings className="w-4 h-4" />
-          Settings
-        </button>
-        <button className="flex items-center gap-3 px-3 py-2 w-full rounded text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-          <HelpCircle className="w-4 h-4" />
-          Help
-        </button>
+       <div className="p-3 border-t border-gray-200 space-y-1">
+  <Link
+    href="/settings"
+    className={cn(
+      "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+      pathname === "/settings"
+        ? "bg-primary-light text-primary"
+        : "text-gray-700 hover:bg-gray-100"
+    )}
+  >
+    <Settings className="w-4 h-4" />
+    Settings
+  </Link>
+
+  <Link
+    href="/help"
+    className={cn(
+      "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+      pathname === "/help"
+        ? "bg-primary-light text-primary"
+        : "text-gray-700 hover:bg-gray-100"
+    )}
+  >
+    <HelpCircle className="w-4 h-4" />
+    Help
+  </Link>
+</div>
       </div>
     </aside>
   );

@@ -1,7 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.search.repository import search_repository
-from src.search.schema import SearchResponse
+from src.search.schema import (
+    SearchResponse,
+    SearchResult,
+)
+from src.users.model import User
 
 
 class SearchService:
@@ -9,28 +13,63 @@ class SearchService:
     async def search(
         self,
         db: AsyncSession,
+        current_user: User,
         query: str,
+        filter: str,
     ) -> SearchResponse:
 
-        projects = await search_repository.search_projects(
-            db,
-            query,
-        )
+        results = []
 
-        documents = await search_repository.search_documents(
-            db,
-            query,
-        )
+        if filter in ("all", "project"):
+            results.extend(
+                await search_repository.search_projects(
+                    db,
+                    current_user.id,
+                    query,
+                )
+            )
 
-        notes = await search_repository.search_notes(
-            db,
-            query,
+        if filter in ("all", "document"):
+            results.extend(
+                await search_repository.search_documents(
+                    db,
+                    current_user.id,
+                    query,
+                )
+            )
+
+        if filter in ("all", "note"):
+            results.extend(
+                await search_repository.search_notes(
+                    db,
+                    current_user.id,
+                    query,
+                )
+            )
+
+        if filter in ("all", "conversation"):
+            results.extend(
+                await search_repository.search_conversations(
+                    db,
+                    current_user.id,
+                    query,
+                )
+            )
+
+        results.sort(
+            key=lambda item: (
+                item["score"],
+                item["created_at"],
+            ),
+            reverse=True,
         )
 
         return SearchResponse(
-            projects=projects,
-            documents=documents,
-            notes=notes,
+            ai_answer="",
+            results=[
+                SearchResult(**item)
+                for item in results
+            ],
         )
 
 

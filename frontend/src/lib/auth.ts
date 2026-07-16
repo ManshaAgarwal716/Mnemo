@@ -69,3 +69,24 @@ export async function getCurrentUser(): Promise<User> {
 
   return response.data;
 }
+
+export async function updateProfile(data: {
+  name: string;
+}): Promise<User> {
+  const response = await api.patch(
+    "/users/me",
+    data,
+  );
+
+  return response.data;
+}
+
+export async function changePassword(data: {
+  current_password: string;
+  new_password: string;
+}): Promise<void> {
+  await api.patch(
+    "/users/password",
+    data,
+  );
+}
