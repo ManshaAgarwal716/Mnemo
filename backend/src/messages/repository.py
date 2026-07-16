@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.messages.model import Message
@@ -71,6 +71,19 @@ class MessageRepository:
     ) -> None:
 
         await db.delete(message)
+
+        await db.commit()
+    async def delete_all_by_conversation(
+        self,
+        db: AsyncSession,
+        conversation_id: uuid.UUID,
+    ) -> None:
+
+        await db.execute(
+            delete(Message).where(
+                Message.conversation_id == conversation_id
+            )
+        )
 
         await db.commit()
 

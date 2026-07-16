@@ -1,6 +1,6 @@
 "use client";
 
-import { Textarea } from "@/components/ui/Textarea";
+import { Editor } from "@/features/editor/Editor";
 import { Input } from "@/components/ui/Input";
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -66,12 +66,11 @@ onSuccess: () => {
   });
 
   useEffect(() => {
-    if (note) {
-      setTitle(note.title);
-      setContent(note.content);
-      setSaveStatus("saved");
-    }
-  }, [note]);
+  if (!note) return;
+  setTitle(note.title);
+  setContent(note.content || "");
+  setSaveStatus("saved");
+}, [note]);
 
   useEffect(() => {
     return () => {
@@ -110,7 +109,7 @@ onSuccess: () => {
           },
         }
       );
-    }, 2000);
+    }, 1500);
   };
 
   const handleSave = () => {
@@ -155,10 +154,10 @@ onSuccess: () => {
         {noteId ? (
           <span className="text-xs text-gray-500 min-w-[70px] text-right">
             {saveStatus === "saving"
-              ? "Saving..."
-              : saveStatus === "saved"
-              ? "Saved ✓"
-              : "Unsaved"}
+  ? "🟡 Saving..."
+  : saveStatus === "saved"
+  ? "🟢 Saved"
+  : "🔴 Unsaved"}
           </span>
         ) : (
           <button
@@ -171,20 +170,15 @@ onSuccess: () => {
         )}
       </div>
 
-      <div className="flex-1 p-6">
-        <Textarea
-          value={content}
-          placeholder="Start writing..."
-          className="w-full h-full border-0 focus:ring-0 resize-none text-sm"
-          onChange={(e) => {
-            const value = e.target.value;
-
-            setContent(value);
-
-            scheduleSave(title, value);
-          }}
-        />
-      </div>
+      <div className="flex-1 overflow-hidden">
+  <Editor
+    content={content}
+    onChange={(value) => {
+      setContent(value);
+      scheduleSave(title, value);
+    }}
+  />
+</div>
     </div>
   );
 }

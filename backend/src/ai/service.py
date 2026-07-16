@@ -11,6 +11,7 @@ from src.messages.enums import MessageRole
 from src.messages.schema import MessageCreate
 from src.messages.service import message_service
 from src.retrieval.service import retrieval_service
+import traceback
 
 DEFAULT_TITLE = "New conversation"
 

@@ -139,3 +139,24 @@ async def delete_conversation(
             status_code=404,
             detail=str(e),
         )
+@router.delete(
+    "/{conversation_id}/messages",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def clear_messages(
+    conversation_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    try:
+        await conversation_service.clear_messages(
+            db,
+            conversation_id,
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+        )

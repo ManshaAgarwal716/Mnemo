@@ -26,11 +26,20 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
   setActiveProject: (projectId) => set({ activeProjectId: projectId }),
   setActiveConversation: (conversationId) =>
-  set({ activeConversationId: conversationId }),
+  set((state) => {
+    if (
+      state.activeConversationId === conversationId
+    ) {
+      return state;
+    }
+
+    return {
+      activeConversationId: conversationId,
+    };
+  }),
 
   addTab: (tab) =>
     set((state) => {
-      // Check if tab already exists
       const existingTab = state.tabs.find((t) => t.documentId === tab.documentId);
       if (existingTab) {
         return { activeTabId: existingTab.id };
@@ -47,7 +56,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       let newActiveTabId = state.activeTabId;
 
       if (state.activeTabId === tabId) {
-        // Find next tab to activate
         const currentIndex = state.tabs.findIndex((t) => t.id === tabId);
         if (newTabs.length > 0) {
           newActiveTabId =

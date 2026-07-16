@@ -5,14 +5,25 @@ import { Circle, Maximize2, MoreVertical } from "lucide-react";
 import { Tabs } from "@/components/ui/Tabs";
 import { useUiStore } from "@/store/uiStore";
 import { cn } from "@/lib/utils";
-
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useMutation, useQueryClient,  useQuery, } from "@tanstack/react-query";
+import {
+  getConversation,
+  updateConversation,
+  deleteConversation,
+} from "@/lib/chat";
+import { clearConversationMessages } from "@/lib/chat";
+import { ClearConversationDialog } from "./ClearConversationDialog";
+import { RenameConversationDialog } from "./RenameConversationDialog";
+import { useWorkspaceStore } from "@/store/workspaceStore";
 import { ChatInput } from "./ChatInput";
 import { ChatThread } from "./ChatThread";
-import { ConceptChips } from "./ConceptChips";
 import { QuickActions } from "./QuickActions";
 import { RelatedTab } from "./RelatedTab";
+import { DeleteConversationDialog } from "./DeleteConversationDialog";
 import { SummaryTab } from "./SummaryTab";
-
+import { AiMenu } from "./AiMenu";
 interface AiPanelProps {
   conversationId: string;
   mode?: "compact" | "full";
@@ -26,7 +37,25 @@ export function AiPanel({
     activeAiTab,
     setActiveAiTab,
   } = useUiStore();
+  const { setActiveConversation } = useWorkspaceStore();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation({
+  mutationFn: () => deleteConversation(conversationId),
 
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["conversations"],
+    });
+
+    setActiveConversation(null);
+  },
+});
+  const [renameOpen, setRenameOpen] = useState(false);
+  const { activeProjectId } =
+  useWorkspaceStore();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
   const tabs = [
     {
       id: "chat",
@@ -41,6 +70,42 @@ export function AiPanel({
       label: "Related",
     },
   ];
+  const { data: conversation } = useQuery({
+  queryKey: ["conversation", conversationId],
+  queryFn: () => getConversation(conversationId),
+  enabled: !!conversationId,
+});
+  const renameMutation = useMutation({
+  mutationFn: (title: string) =>
+    updateConversation(conversationId, {
+      title,
+    }),
+
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["conversations"],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: ["conversation", conversationId],
+    });
+
+    setRenameOpen(false);
+  },
+});
+const clearMutation = useMutation({
+  mutationFn: () =>
+    clearConversationMessages(conversationId),
+
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["messages", conversationId],
+    });
+
+    setClearOpen(false);
+  },
+});
+
 
   return (
     <div
@@ -63,13 +128,27 @@ export function AiPanel({
           <div className="flex items-center gap-1">
             {mode === "compact" && (
               <>
-                <button className="rounded p-1 hover:bg-gray-100">
-                  <Maximize2 className="h-4 w-4 text-gray-500" />
-                </button>
+                <button
+  onClick={() =>
+    router.push(
+      `/ai?project=${activeProjectId}&conversation=${conversationId}`
+    )
+  }
+  className="rounded p-1 hover:bg-gray-100"
+>
+  <Maximize2 className="h-4 w-4 text-gray-500" />
+</button>
 
-                <button className="rounded p-1 hover:bg-gray-100">
-                  <MoreVertical className="h-4 w-4 text-gray-500" />
-                </button>
+                <AiMenu
+  onOpenFull={() =>
+    router.push(
+      `/ai?project=${activeProjectId}&conversation=${conversationId}`
+    )
+  }
+  onRename={() => setRenameOpen(true)}
+  onDelete={() => setDeleteOpen(true)}
+  onClear={() => setClearOpen(true)}
+/>
               </>
             )}
           </div>
@@ -89,7 +168,6 @@ export function AiPanel({
         {activeAiTab === "chat" && (
           <>
             <ChatThread conversationId={conversationId} />
-            <ConceptChips />
             <QuickActions />
             <ChatInput conversationId={conversationId} />
           </>
@@ -103,6 +181,24 @@ export function AiPanel({
           <RelatedTab conversationId={conversationId} />
         )}
       </div>
+      <RenameConversationDialog
+  open={renameOpen}
+  currentTitle={conversation?.title ?? ""}
+  onClose={() => setRenameOpen(false)}
+  onSave={(title) => renameMutation.mutate(title)}
+/>
+  <DeleteConversationDialog
+  open={deleteOpen}
+  onClose={() => setDeleteOpen(false)}
+  onDelete={() => deleteMutation.mutate()}
+  isDeleting={deleteMutation.isPending}
+/>
+<ClearConversationDialog
+  open={clearOpen}
+  onClose={() => setClearOpen(false)}
+  onClear={() => clearMutation.mutate()}
+  isClearing={clearMutation.isPending}
+/>
     </div>
   );
 }

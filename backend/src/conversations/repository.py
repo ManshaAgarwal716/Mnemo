@@ -1,11 +1,11 @@
 import uuid
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conversations.model import Conversation
 
-
+from sqlalchemy import select, delete
+from src.messages.model import Message
 class ConversationRepository:
 
     async def create(
@@ -71,6 +71,20 @@ class ConversationRepository:
         await db.delete(conversation)
 
         await db.commit()
+    async def clear_messages(
+    self,
+    db: AsyncSession,
+    conversation_id: uuid.UUID,
+) -> None:
+
+        await db.execute(
+            delete(Message).where(
+                Message.conversation_id == conversation_id
+            )
+        )
+
+        await db.commit()
+    
 
 
 conversation_repository = ConversationRepository()

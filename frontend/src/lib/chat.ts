@@ -1,8 +1,22 @@
 import api from "@/lib/api";
 import { Conversation, Message } from "@/types";
 
-export async function getConversations(projectId: string): Promise<Conversation[]> {
-  const response = await api.get(`/conversations/project/${projectId}`);
+export async function getConversations(
+  projectId: string
+): Promise<Conversation[]> {
+  console.log(
+    "getConversations() called with:",
+    projectId
+  );
+
+  if (!projectId) {
+    throw new Error("Project ID is empty");
+  }
+
+  const response = await api.get(
+    `/conversations/project/${projectId}`
+  );
+
   return response.data.map((conv: any) => ({
     id: conv.id,
     projectId: conv.project_id,
@@ -16,6 +30,7 @@ export async function getConversations(projectId: string): Promise<Conversation[
 }
 
 export async function getConversation(id: string): Promise<Conversation> {
+  
   const response = await api.get(`/conversations/${id}`);
   const conv = response.data;
   return {
@@ -110,4 +125,11 @@ export async function getRelated(
   );
 
   return response.data;
+}
+export async function clearConversationMessages(
+  conversationId: string
+): Promise<void> {
+  await api.delete(
+    `/conversations/${conversationId}/messages`
+  );
 }
