@@ -7,6 +7,7 @@ import {
   updateConversation,
   deleteConversation,
 } from "@/lib/chat";
+import type { Conversation } from "@/types";
 import {
   groupConversationsByDate,
   formatRelativeTime,
@@ -48,9 +49,10 @@ export function ConversationHistory({
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: conversations, isLoading } = useQuery({
-    queryKey: ["conversations", projectId],
-    queryFn: () => getConversations(projectId),
-  });
+  queryKey: ["conversations", projectId],
+  queryFn: () => getConversations(projectId),
+  enabled: !!projectId,
+});
 
   const renameMutation = useMutation({
     mutationFn: ({
@@ -72,29 +74,32 @@ export function ConversationHistory({
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteConversation,
+  mutationFn: deleteConversation,
 
-    onSuccess: (_, deletedId) => {
-      queryClient.invalidateQueries({
-        queryKey: ["conversations"],
-      });
+  onSuccess: async (_, deletedId) => {
+    await queryClient.invalidateQueries({
+      queryKey: ["conversations", projectId],
+    });
 
-      if (activeConversationId === deletedId) {
-        const remaining =
-          conversations?.filter((c) => c.id !== deletedId) ?? [];
+    const updated =
+      queryClient.getQueryData<Conversation[]>([
+        "conversations",
+        projectId,
+      ]) ?? [];
 
-        if (remaining.length > 0) {
-          onConversationSelect(remaining[0].id);
-        } else {
-          onConversationSelect(null);
-        }
+    if (activeConversationId === deletedId) {
+      if (updated.length > 0) {
+        onConversationSelect(updated[0].id);
+      } else {
+        onConversationSelect(null);
       }
+    }
 
-      setDeleteOpen(false);
-      setDeleteId(null);
-      setMenuOpenId(null);
-    },
-  });
+    setDeleteOpen(false);
+    setDeleteId(null);
+    setMenuOpenId(null);
+  },
+});
 
   if (isLoading) {
     return (

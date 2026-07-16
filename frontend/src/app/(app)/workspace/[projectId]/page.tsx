@@ -10,17 +10,73 @@ import { useWorkspaceStore } from "@/store/workspaceStore";
 import { useParams } from "next/navigation";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FileText } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+import {
+  getConversations,
+  createConversation,
+} from "@/lib/chat";
 export default function WorkspaceProjectPage() {
   const params = useParams();
+  const queryClient = useQueryClient();
   const projectId = params.projectId as string;
-  const { setActiveProject, activeTabId, tabs,activeConversationId, } = useWorkspaceStore();
-
+  const { setActiveProject,setActiveConversation, activeTabId, tabs,activeConversationId, } = useWorkspaceStore();
+  const {
+  data: conversations = [],
+  isLoading: conversationsLoading,
+} = useQuery({
+  queryKey: ["conversations", projectId],
+  queryFn: () => getConversations(projectId),
+  enabled: !!projectId,
+});
+ console.log("Route projectId:", projectId);
   useEffect(() => {
+    console.log("Setting active project:", projectId);
     setActiveProject(projectId);
   }, [projectId, setActiveProject]);
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
+
+const createConversationMutation = useMutation({
+  mutationFn: () =>
+    createConversation({
+      projectId,
+      title: "New conversation",
+    }),
+
+  onSuccess: (conversation) => {
+  setActiveConversation(conversation.id);
+
+  queryClient.invalidateQueries({
+    queryKey: ["conversations", projectId],
+  });
+},
+});
+useEffect(() => {
+  if (!projectId) return;
+  if (conversationsLoading) return;
+  if (createConversationMutation.isPending) return;
+  if (
+  activeConversationId &&
+  conversations.some(c => c.id === activeConversationId)
+) {
+  return;
+}
+
+  if (conversations.length > 0) {
+    setActiveConversation(conversations[0].id);
+    return;
+  }
+
+  createConversationMutation.mutate();
+}, [
+  projectId,
+  conversations,
+  conversationsLoading,
+  activeConversationId,
+  createConversationMutation.isPending,
+  setActiveConversation,
+]);
 
   return (
     <div className="flex h-full">

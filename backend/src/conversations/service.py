@@ -8,6 +8,7 @@ from src.conversations.schema import (
     ConversationCreate,
     ConversationUpdate,
 )
+from src.messages.repository import message_repository
 
 
 class ConversationService:
@@ -98,6 +99,21 @@ class ConversationService:
         await conversation_repository.delete(
             db,
             conversation,
+        )
+    async def clear_messages(
+    self,
+    db: AsyncSession,
+    conversation_id: uuid.UUID,
+) -> None:
+
+        await self.get_conversation(
+            db,
+            conversation_id,
+        )
+
+        await message_repository.delete_all_by_conversation(
+            db,
+            conversation_id,
         )
 
 

@@ -55,9 +55,15 @@ export function ChatInput({ conversationId }: ChatInputProps) {
       });
     },
 
-    onError: () => {
-      clearStreaming();
-    },
+   onError: (error: any) => {
+  clearStreaming();
+
+  const message =
+    error?.response?.data?.detail ??
+    "AI is temporarily unavailable. Please try again later.";
+
+  alert(message);
+}
   });
 
   const handleSubmit = (e: React.FormEvent) => {

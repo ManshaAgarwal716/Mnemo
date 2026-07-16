@@ -26,7 +26,6 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { activeProjectId } = useWorkspaceStore();
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
@@ -64,11 +63,7 @@ const open = useProjectModalStore((state) => state.openCreate);
             );
           })}
           <Link
-  href={
-    activeProjectId
-      ? `/workspace/${activeProjectId}/ai`
-      : "/dashboard"
-  }
+   href="/ai"
   className={cn(
     "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
     pathname.includes("/ai")
