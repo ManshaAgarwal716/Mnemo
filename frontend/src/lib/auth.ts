@@ -54,11 +54,14 @@ export async function signup(
   );
 }
 
-export async function logout() {
-
-  localStorage.removeItem(
-    "auth_token"
-  );
+export async function logout(): Promise<void> {
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    localStorage.removeItem("auth_token");
+  }
 }
 
 export async function getCurrentUser(): Promise<User> {
@@ -88,5 +91,17 @@ export async function changePassword(data: {
   await api.patch(
     "/users/password",
     data,
+  );
+}
+export async function deleteAccount(
+  password: string,
+): Promise<void> {
+  await api.delete(
+    "/users/me",
+    {
+      data: {
+        password,
+      },
+    },
   );
 }

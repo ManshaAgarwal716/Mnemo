@@ -32,7 +32,8 @@ class PasswordUpdate(BaseModel):
     new_password: str = Field(
         min_length=8,
     )
-
+class DeleteAccountRequest(BaseModel):
+    password: str
 
 class UserResponse(BaseModel):
     id: UUID

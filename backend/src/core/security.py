@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
+import uuid
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -34,10 +35,18 @@ def create_access_token(
     to_encode = data.copy()
 
     expire = datetime.now(timezone.utc) + (
-        expires_delta or timedelta(hours=1)
+        expires_delta
+        or timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
     )
 
-    to_encode.update({"exp": expire})
+    to_encode.update(
+        {
+            "exp": expire,
+            "jti": str(uuid.uuid4()),
+        }
+    )
 
     return jwt.encode(
         to_encode,
@@ -48,15 +57,46 @@ def create_access_token(
 
 def decode_access_token(
     token: str,
-) -> dict:
+) -> dict | None:
 
     try:
         payload = jwt.decode(
             token,
             settings.JWT_SECRET,
-            algorithms=[settings.JWT_ALGORITHM],
+            algorithms=[
+                settings.JWT_ALGORITHM,
+            ],
         )
+
         return payload
 
     except JWTError:
         return None
+
+
+def get_token_remaining_seconds(
+    payload: dict,
+) -> int:
+
+    exp = payload.get("exp")
+
+    if exp is None:
+        return 0
+
+    if isinstance(exp, datetime):
+        expire_time = exp
+    else:
+        expire_time = datetime.fromtimestamp(
+            exp,
+            tz=timezone.utc,
+        )
+
+    remaining = (
+        expire_time
+        - datetime.now(timezone.utc)
+    ).total_seconds()
+
+    return max(
+        int(remaining),
+        0,
+    )

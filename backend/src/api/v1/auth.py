@@ -10,13 +10,20 @@ from src.users.schema import (
     TokenResponse,
 )
 from src.users.service import user_service
+from src.auth.blocklist import token_blocklist
+from fastapi.security import OAuth2PasswordBearer
+from src.core.security import (
+    decode_access_token,
+    get_token_remaining_seconds,
+)
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"],
 )
-
-
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/auth/login",
+)
 @router.post(
     "/signup",
     response_model=UserResponse,
@@ -75,3 +82,35 @@ async def me(
     current_user: User = Depends(get_current_user),
 ):
     return current_user
+@router.post("/logout")
+async def logout(
+    token: str = Depends(oauth2_scheme),
+):
+    payload = decode_access_token(token)
+
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
+    jti = payload.get("jti")
+
+    if jti is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )
+
+    expires_in = get_token_remaining_seconds(
+        payload,
+    )
+
+    await token_blocklist.block_token(
+        jti,
+        expires_in,
+    )
+
+    return {
+        "message": "Logged out successfully.",
+    }

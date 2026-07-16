@@ -55,4 +55,5 @@ class User(Base):
     projects: Mapped[list["Project"]] = relationship(
     back_populates="owner",
     cascade="all, delete-orphan",
+    lazy="selectin",
 )
