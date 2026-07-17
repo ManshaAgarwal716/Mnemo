@@ -28,6 +28,7 @@ class ProjectRepository:
         db: AsyncSession,
         owner_id: uuid.UUID,
     ) -> list[Project]:
+        print("OWNER ID:", owner_id)
 
         result = await db.execute(
             select(Project).where(
@@ -35,8 +36,11 @@ class ProjectRepository:
             )
         )
 
-        return result.scalars().all()
+        projects = result.scalars().all()
 
+        print("PROJECTS:", [p.name for p in projects])
+
+        return projects
 
     async def get_by_id(
         self,
