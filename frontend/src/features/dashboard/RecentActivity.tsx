@@ -18,6 +18,7 @@ import { useWorkspaceStore } from "@/store/workspaceStore";
 
 interface RecentActivityProps {
   showHeader?: boolean;
+  maxItems?: number;
 }
 
 const iconStyles = {
@@ -45,6 +46,7 @@ const iconStyles = {
 
 export function RecentActivity({
   showHeader = true,
+  maxItems,
 }: RecentActivityProps) {
   const router = useRouter();
 
@@ -112,6 +114,10 @@ export function RecentActivity({
         break;
     }
   };
+  const activities =
+  maxItems !== undefined
+    ? (data?.recent_activity ?? []).slice(0, maxItems)
+    : data?.recent_activity ?? [];
 
   return (
     <Card className="p-6">
@@ -132,7 +138,7 @@ export function RecentActivity({
       )}
 
       <div className="space-y-1">
-        {data?.recent_activity.map((activity) => {
+        {activities.map((activity) => {
           const style =
             iconStyles[activity.type];
 

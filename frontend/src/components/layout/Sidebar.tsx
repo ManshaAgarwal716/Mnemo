@@ -12,6 +12,7 @@ import {
   Settings,
   HelpCircle,
   Brain,
+  Activity,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +24,11 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Workspace", href: "/workspace", icon: FolderKanban },
   { label: "Search", href: "/search", icon: Search },
+  {
+  label: "Activity",
+  href: "/activity",
+  icon: Activity,
+},
 ];
 
 export function Sidebar() {

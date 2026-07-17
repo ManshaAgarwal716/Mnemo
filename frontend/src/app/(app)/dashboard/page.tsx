@@ -18,7 +18,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="mb-6">
-          <RecentActivity />
+          <RecentActivity maxItems={5} />
         </div>
       </div>
     </div>
