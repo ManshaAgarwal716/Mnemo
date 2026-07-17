@@ -152,14 +152,14 @@ class DashboardService:
         )
 
         return DashboardResponse(
-            stats=DashboardStats(
-                projects=project_count or 0,
-                documents=document_count or 0,
-                notes=note_count or 0,
-                conversations=conversation_count or 0,
-            ),
-            recent_activity=activities[:10],
-        )
+    stats=DashboardStats(
+        projects=project_count or 0,
+        documents=document_count or 0,
+        notes=note_count or 0,
+        conversations=conversation_count or 0,
+    ),
+    recent_activity=activities,
+)
 
 
 dashboard_service = DashboardService()

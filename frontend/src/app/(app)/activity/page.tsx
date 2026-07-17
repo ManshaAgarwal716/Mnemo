@@ -27,7 +27,10 @@ export default function ActivityPage() {
           Everything you've recently worked on.
         </p>
 
-        <RecentActivity showHeader={false} />
+        <RecentActivity
+        showHeader={false}
+        maxItems={undefined}
+      />
       </div>
     </div>
   );
