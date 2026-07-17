@@ -8,13 +8,16 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FolderKanban, Plus } from "lucide-react";
 import { useProjectModalStore } from "@/store/projectModalStore";
-
+import { useAuthStore } from "@/store/authStore";
 export function ProjectsGrid() {
 const open = useProjectModalStore((state) => state.openCreate);
 
+const user = useAuthStore((state) => state.user);
+
   const { data: projects, isLoading } = useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", user?.id], 
     queryFn: getProjects,
+    enabled: !!user,
   });
 
   if (isLoading) {

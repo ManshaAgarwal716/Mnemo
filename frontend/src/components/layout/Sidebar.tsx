@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/lib/projects";
 import { useProjectModalStore } from "@/store/projectModalStore";
 import { useWorkspaceStore } from "@/store/workspaceStore";
+import { useAuthStore } from "@/store/authStore";
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Workspace", href: "/workspace", icon: FolderKanban },
@@ -26,10 +27,13 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { data: projects = [] } = useQuery({
-    queryKey: ["projects"],
-    queryFn: getProjects,
-  });
+  const user = useAuthStore((state) => state.user);
+
+const { data: projects = [] } = useQuery({
+  queryKey: ["projects", user?.id],
+  queryFn: getProjects,
+  enabled: !!user,
+});
 const open = useProjectModalStore((state) => state.openCreate);
   return (
     <aside className="w-56 border-r border-gray-200 bg-white flex flex-col h-screen">

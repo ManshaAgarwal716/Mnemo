@@ -52,6 +52,7 @@ async def get_projects(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    print("CURRENT USER:", current_user.id, current_user.email)
 
     return await project_service.get_projects(
         db,

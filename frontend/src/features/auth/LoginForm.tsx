@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { login } from "@/lib/auth";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
-
+import { useQueryClient } from "@tanstack/react-query";
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -18,6 +18,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,11 +34,14 @@ export function LoginForm() {
     setError(null);
 
     try {
-      // Validate with zod
       const validated = loginSchema.parse(data);
       const result = await login(validated.email, validated.password);
-      setAuth(result.user, result.token);
-      router.push("/dashboard");
+
+queryClient.clear(); 
+
+setAuth(result.user, result.token);
+
+router.push("/dashboard");
     } catch (err: any) {
       if (err.errors) {
         setError(err.errors[0].message);

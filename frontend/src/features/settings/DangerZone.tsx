@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LogOut, Trash2 } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export function DangerZone() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const clearAuth = useAuthStore(
     (state) => state.logout
@@ -30,24 +31,27 @@ export function DangerZone() {
     useState("");
 
   const logoutHandler = async () => {
-    await logout();
+  await logout();
 
-    clearAuth();
+  queryClient.clear();  
 
-    router.replace("/login");
-  };
+  clearAuth();
 
+  router.replace("/login");
+};
   const deleteMutation = useMutation({
     mutationFn: () =>
       deleteAccount(password),
 
     onSuccess: async () => {
-      await logout();
+  await logout();
 
-      clearAuth();
+  queryClient.clear();   
 
-      router.replace("/login");
-    },
+  clearAuth();
+
+  router.replace("/login");
+},
   });
 
   return (
