@@ -11,6 +11,7 @@ from src.health.routes import router as health_router
 from src.api.v1.search import router as search_router
 from src.api.v1.dashboard import router as dashboard_router
 from src.api.v1.users import router as user_router
+from src.core.config import settings
 from fastapi.staticfiles import StaticFiles
 app = FastAPI(
     title="Mnemo API",
@@ -20,6 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
+        settings.FRONTEND_URL,
     ],
     allow_credentials=True,
     allow_methods=["*"],
