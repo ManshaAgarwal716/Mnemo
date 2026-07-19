@@ -18,7 +18,6 @@ from src.core.security import (
     create_access_token,
 )
 
-
 class UserService:
 
     async def signup(

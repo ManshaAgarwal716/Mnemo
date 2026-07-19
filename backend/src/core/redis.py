@@ -1,10 +1,7 @@
-from redis.asyncio import Redis
+from backend.src.db import redis
+from redis.asyncio import redis
 
 from src.core.config import settings
 
 
-redis_client = Redis(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-    decode_responses=True,
-)
+redis_client = redis.from_url(settings.REDIS_URL)
