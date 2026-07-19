@@ -15,6 +15,7 @@ from src.core.config import settings
 from fastapi.staticfiles import StaticFiles
 app = FastAPI(
     title="Mnemo API",
+    redirect_slashes=False,
 )
 
 app.add_middleware(
