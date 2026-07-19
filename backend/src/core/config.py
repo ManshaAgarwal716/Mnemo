@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     MAIL_FROM: str
     MAIL_PORT: int
     MAIL_SERVER: str
-
+    FRONTEND_URL: str
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False
     USE_CREDENTIALS: bool = True
