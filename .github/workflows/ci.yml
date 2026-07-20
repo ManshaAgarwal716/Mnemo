@@ -58,7 +58,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Check Python Syntax
-       run: |
+        run: |
          python -m compileall src
 
   docker:
