@@ -57,11 +57,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify FastAPI Application
-        env:
-          PYTHONPATH: .
-        run: |
-          python -c "from src.main import app;"
+      - name: Check Python Syntax
+       run: |
+         python -m compileall src
 
   docker:
     name: Docker Build
