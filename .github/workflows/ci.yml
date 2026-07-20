@@ -61,7 +61,7 @@ jobs:
         env:
           PYTHONPATH: .
         run: |
-          python -c "from src.main import app;
+          python -c "from src.main import app;"
 
   docker:
     name: Docker Build
