@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 from src.conversations.model import Conversation
 from sqlalchemy import DateTime, ForeignKey, String, Text
@@ -36,15 +36,15 @@ class Project(Base):
     )
 
         created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-    )
+    DateTime(timezone=True),
+    default=lambda: datetime.now(timezone.utc),
+)
 
         updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
-    )
+    DateTime(timezone=True),
+    default=lambda: datetime.now(timezone.utc),
+    onupdate=lambda: datetime.now(timezone.utc),
+)
 
         owner: Mapped["User"] = relationship(
         back_populates="projects",

@@ -6,7 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
+  const date = new Date(
+  dateString.endsWith("Z")
+    ? dateString
+    : `${dateString}Z`
+);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);

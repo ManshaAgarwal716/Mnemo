@@ -26,6 +26,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   const openEdit = useProjectModalStore((state) => state.openEdit);
   const openDelete = useProjectModalStore((state) => state.openDelete);
+  console.log(project);
 
   return (
     <Card
@@ -106,6 +107,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
             <span className="text-xs text-gray-500">
               {formatRelativeTime(project.updatedAt)}
+              
             </span>
           </div>
         </div>
