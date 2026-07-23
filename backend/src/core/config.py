@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = False
     GEMINI_API_KEY: str
+    LLM_PROVIDER: str = "groq" 
+    GROQ_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

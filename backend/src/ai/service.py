@@ -1,17 +1,17 @@
 import uuid
 
-from google import genai
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from src.ai.providers.gemini_provider import GeminiProvider
+from src.ai.providers.groq_provider import GroqProvider
+from src.core.config import settings
+from src.ai.providers.gemini_provider import GeminiProvider
 from src.ai.schema import ChatResponse, Source
 from src.conversations.schema import ConversationUpdate
 from src.conversations.service import conversation_service
-from src.core.config import settings
 from src.messages.enums import MessageRole
 from src.messages.schema import MessageCreate
 from src.messages.service import message_service
 from src.retrieval.service import retrieval_service
-import traceback
 
 DEFAULT_TITLE = "New conversation"
 
@@ -19,9 +19,10 @@ DEFAULT_TITLE = "New conversation"
 class AIService:
 
     def __init__(self):
-        self.client = genai.Client(
-            api_key=settings.GEMINI_API_KEY,
-        )
+        if settings.LLM_PROVIDER.lower() == "groq":
+            self.provider = GroqProvider()
+        else:
+            self.provider = GeminiProvider()
 
     async def build_history(
         self,
@@ -52,90 +53,6 @@ class AIService:
             )
 
         return history
-
-    async def generate(
-        self,
-        history,
-        prompt: str,
-        context: str,
-    ) -> str:
-
-        history.append(
-            {
-                "role": "user",
-                "parts": [
-                    {
-                        "text": f"""
-You are Mnemo AI, an AI research assistant.
-
-Answer using the provided context whenever possible.
-
-If the user greets you or asks casual questions,
-respond naturally.
-
-If the answer cannot be found inside the provided
-context, clearly say you couldn't find relevant
-information in the uploaded documents.
-
-Context:
-{context}
-
-Question:
-{prompt}
-"""
-                    }
-                ],
-            }
-        )
-
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=history,
-        )
-
-        return response.text
-
-    async def generate_title(
-        self,
-        first_message: str,
-    ) -> str:
-
-        prompt = f"""
-Generate a concise conversation title.
-
-Rules:
-- 3 to 6 words.
-- No punctuation.
-- No quotation marks.
-- Return ONLY the title.
-
-User message:
-
-{first_message}
-"""
-
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[
-                {
-                    "role": "user",
-                    "parts": [
-                        {
-                            "text": prompt,
-                        }
-                    ],
-                }
-            ],
-        )
-
-        title = (
-            response.text
-            .strip()
-            .strip('"')
-            .strip("'")
-        )
-
-        return title[:100]
 
     async def save_user_message(
         self,
@@ -168,6 +85,7 @@ User message:
                 sources=sources,
             ),
         )
+
     async def chat(
         self,
         db: AsyncSession,
@@ -226,7 +144,7 @@ User message:
             conversation_id,
         )
 
-        response = await self.generate(
+        response = await self.provider.generate(
             history,
             prompt,
             context,
@@ -247,7 +165,7 @@ User message:
             and conversation.title == DEFAULT_TITLE
         ):
             try:
-                new_title = await self.generate_title(
+                new_title = await self.provider.generate_title(
                     prompt,
                 )
 
@@ -260,9 +178,7 @@ User message:
                 )
 
             except Exception as e:
-                print(
-                    f"Title generation failed: {e}"
-                )
+                print(f"Title generation failed: {e}")
 
                 try:
                     await conversation_service.update_conversation(
