@@ -19,7 +19,9 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-
+class GoogleAuthRequest(BaseModel):
+    token: str
+    
 class UserUpdate(BaseModel):
     name: str = Field(
         min_length=2,

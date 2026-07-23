@@ -78,6 +78,37 @@ class UserService:
         )
 
         return user, token
+    async def google_login(
+    self,
+    db: AsyncSession,
+    email: str,
+    name: str,
+) -> tuple[User, str]:
+
+        user = await user_repository.get_by_email(
+            db,
+            email,
+        )
+
+        if not user:
+            user = User(
+                name=name,
+                email=email,
+                hashed_password=hash_password("GOOGLE_AUTH_USER"),
+            )
+
+            user = await user_repository.create(
+                db,
+                user,
+            )
+
+        token = create_access_token(
+            {
+                "sub": str(user.id),
+            }
+        )
+
+        return user, token
 
     async def update_profile(
         self,

@@ -31,6 +31,7 @@ class Settings(BaseSettings):
         extra="ignore",
         case_sensitive=True,
     )
-
+    GOOGLE_CLIENT_ID: str
+    
 
 settings = Settings()

@@ -8,7 +8,13 @@ from src.users.schema import (
     UserLogin,
     UserResponse,
     TokenResponse,
+    GoogleAuthRequest,
 )
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+from pydantic import BaseModel
+from src.core.config import settings
 from src.users.service import user_service
 from src.auth.blocklist import token_blocklist
 from fastapi.security import OAuth2PasswordBearer
@@ -71,7 +77,40 @@ async def login(
             detail=str(e),
         )
 
+@router.post(
+    "/google",
+    response_model=TokenResponse,
+)
+async def google_login(
+    data: GoogleAuthRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            data.token,
+            requests.Request(),
+            settings.GOOGLE_CLIENT_ID,
+        )
 
+        email = idinfo["email"]
+        name = idinfo.get("name", email.split("@")[0])
+
+        user, token = await user_service.google_login(
+            db,
+            email=email,
+            name=name,
+        )
+
+        return TokenResponse(
+            user=user,
+            token=token,
+        )
+
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Google token",
+        )
 
 
 @router.get(

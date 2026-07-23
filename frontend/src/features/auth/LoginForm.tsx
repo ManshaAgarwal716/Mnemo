@@ -1,5 +1,6 @@
 "use client";
-
+import { GoogleLogin } from "@react-oauth/google";
+import api from "@/lib/api";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -90,6 +91,39 @@ router.push("/dashboard");
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign in"}
       </Button>
+      <div className="relative my-4">
+  <div className="absolute inset-0 flex items-center">
+    <div className="w-full border-t" />
+  </div>
+  <div className="relative flex justify-center text-xs uppercase">
+    <span className="bg-white px-2 text-gray-500">
+      Or continue with
+    </span>
+  </div>
+</div>
+
+<GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const res = await api.post("/auth/google", {
+  token: credentialResponse.credential,
+});
+
+localStorage.setItem("auth_token", res.data.token);
+
+queryClient.clear();
+
+setAuth(res.data.user, res.data.token);
+
+router.push("/dashboard");
+    } catch (err) {
+      setError("Google sign in failed");
+    }
+  }}
+  onError={() => {
+    setError("Google sign in failed");
+  }}
+/>
     </form>
   );
 }
