@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { WorkspaceSidebar } from "@/features/workspace/WorkspaceSidebar";
 import { TabsBar } from "@/features/workspace/TabsBar";
 import { PdfViewer } from "@/features/workspace/PdfViewer";
@@ -19,6 +19,7 @@ import {
 export default function WorkspaceProjectPage() {
   const params = useParams();
   const queryClient = useQueryClient();
+  const initializedConversation = useRef(false);
   const projectId = params.projectId as string;
   const { setActiveProject,setActiveConversation, activeTabId, tabs,activeConversationId, } = useWorkspaceStore();
   const {
@@ -55,26 +56,30 @@ const createConversationMutation = useMutation({
 useEffect(() => {
   if (!projectId) return;
   if (conversationsLoading) return;
-  if (createConversationMutation.isPending) return;
+
+  if (initializedConversation.current) return;
+
   if (
-  activeConversationId &&
-  conversations.some(c => c.id === activeConversationId)
-) {
-  return;
-}
+    activeConversationId &&
+    conversations.some(c => c.id === activeConversationId)
+  ) {
+    initializedConversation.current = true;
+    return;
+  }
 
   if (conversations.length > 0) {
+    initializedConversation.current = true;
     setActiveConversation(conversations[0].id);
     return;
   }
 
+  initializedConversation.current = true;
   createConversationMutation.mutate();
 }, [
   projectId,
   conversations,
   conversationsLoading,
   activeConversationId,
-  createConversationMutation.isPending,
   setActiveConversation,
 ]);
 

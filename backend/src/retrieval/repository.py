@@ -2,7 +2,6 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.document_chunks.model import DocumentChunk
 from src.documents.model import Document
 
@@ -17,17 +16,25 @@ class RetrievalRepository:
         limit: int = 5,
     ):
 
+
+        distance = DocumentChunk.embedding.cosine_distance(
+            query_embedding
+        ).label("distance")
+
         statement = (
-    select(DocumentChunk, Document)
-    .join(Document)
-    .where(
-        Document.project_id == project_id
-    )
-    .order_by(
-        DocumentChunk.embedding.cosine_distance(query_embedding)
-    )
-    .limit(limit)
-)
+            select(
+                DocumentChunk,
+                Document,
+                distance,
+            )
+            .join(Document)
+            .where(
+                Document.project_id == project_id
+            )
+            .order_by(distance)
+            .limit(limit)
+        )
+        
 
         result = await db.execute(statement)
 

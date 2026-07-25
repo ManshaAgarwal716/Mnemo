@@ -4,9 +4,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conversations.model import Conversation
-from src.documents.model import Document
 from src.messages.service import message_service
 from src.notes.model import Note
+from src.retrieval.service import retrieval_service
 
 
 class RelatedService:
@@ -17,6 +17,7 @@ class RelatedService:
         conversation_id: uuid.UUID,
     ) -> dict:
 
+        # Get all messages in the conversation
         messages = await message_service.get_messages(
             db,
             conversation_id,
@@ -29,6 +30,7 @@ class RelatedService:
                 "conversations": [],
             }
 
+        # Get conversation
         conversation = await db.get(
             Conversation,
             conversation_id,
@@ -41,25 +43,59 @@ class RelatedService:
                 "conversations": [],
             }
 
-        document_result = await db.execute(
-            select(Document)
+        # Latest message becomes the semantic search query
+        latest_message = messages[-1].content
+
+        # Retrieve semantically similar chunks
+        retrieved_chunks = (
+            await retrieval_service.retrieve_chunks(
+                db=db,
+                project_id=conversation.project_id,
+                question=latest_message,
+            )
+        )
+
+        # Group retrieved chunks by document
+        documents = []
+        seen_documents = set()
+
+        for item in retrieved_chunks:
+
+            document = item["document"]
+
+            if document.id in seen_documents:
+                continue
+
+            seen_documents.add(document.id)
+
+            chunk = item["chunk"]
+
+            documents.append(
+                {
+                    "id": str(document.id),
+                    "title": document.title,
+                    "project_id": str(document.project_id),
+                    "snippet": (
+                        chunk.content[:150] + "..."
+                        if len(chunk.content) > 150
+                        else chunk.content
+                    ),
+                    "similarity": item["similarity"],
+                }
+            )
+
+        # Notes (still keyword based for now)
+        note_result = await db.execute(
+            select(Note)
             .where(
-                Document.project_id == conversation.project_id,
+                Note.project_id == conversation.project_id,
             )
             .limit(5)
         )
 
-        documents = document_result.scalars().all()
-
-        note_result = await db.execute(
-        select(Note)
-        .where(
-            Note.project_id == conversation.project_id,
-        )
-        .limit(5)
-    )
         notes = note_result.scalars().all()
 
+        # Other conversations (temporary implementation)
         conversation_result = await db.execute(
             select(Conversation)
             .where(
@@ -72,16 +108,7 @@ class RelatedService:
         conversations = conversation_result.scalars().all()
 
         return {
-            "documents": [
-                {
-                    "id": str(document.id),
-                    "title": document.title,
-                    "project_id": str(document.project_id),
-                    "snippet": f"{document.file_name} • {document.file_type}",
-                    "similarity": 0.85,
-                }
-                for document in documents
-            ],
+            "documents": documents,
             "notes": [
                 {
                     "id": str(note.id),
@@ -92,7 +119,7 @@ class RelatedService:
                         if len(note.content) > 150
                         else note.content
                     ),
-                    "similarity": 0.80,
+                    "similarity": 80,
                 }
                 for note in notes
             ],
@@ -102,7 +129,7 @@ class RelatedService:
                     "title": conv.title,
                     "project_id": str(conv.project_id),
                     "snippet": "Related conversation",
-                    "similarity": 0.75,
+                    "similarity": 75,
                 }
                 for conv in conversations
             ],

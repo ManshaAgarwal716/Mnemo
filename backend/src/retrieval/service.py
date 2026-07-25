@@ -22,15 +22,31 @@ class RetrievalService:
             )
         )
 
-        chunks = (
-            await retrieval_repository.semantic_search(
-                db=db,
-                project_id=project_id,
-                query_embedding=query_embedding,
-            )
+        rows = await retrieval_repository.semantic_search(
+            db=db,
+            project_id=project_id,
+            query_embedding=query_embedding,
         )
 
-        return chunks
+        results = []
+
+        for chunk, document, distance in rows:
+
+            similarity = max(
+                0,
+                round((1 - distance) * 100)
+            )
+
+            results.append(
+                {
+                    "chunk": chunk,
+                    "document": document,
+                    "distance": distance,
+                    "similarity": similarity,
+                }
+            )
+
+        return results
 
 
 retrieval_service = RetrievalService()
