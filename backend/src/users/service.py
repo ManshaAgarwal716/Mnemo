@@ -117,7 +117,14 @@ class UserService:
         user_data: UserUpdate,
     ) -> User:
 
-        current_user.name = user_data.name
+        new_name = user_data.name.strip()
+
+        if new_name == current_user.name.strip():
+            raise ValueError(
+                "New name must be different from your current name."
+            )
+
+        current_user.name = new_name
 
         return await user_repository.update(
             db,
@@ -137,6 +144,12 @@ class UserService:
         ):
             raise ValueError(
                 "Current password is incorrect."
+            )
+        if verify_password(
+    password_data.new_password,
+    current_user.hashed_password,):
+            raise ValueError(
+                "New password must be different from your current password."
             )
 
         current_user.hashed_password = hash_password(

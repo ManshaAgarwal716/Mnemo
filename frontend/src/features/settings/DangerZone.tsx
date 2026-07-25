@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { LogOut, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -30,28 +30,19 @@ export function DangerZone() {
   const [password, setPassword] =
     useState("");
 
-  const logoutHandler = async () => {
-  await logout();
-
-  queryClient.clear();  
-
-  clearAuth();
-
-  router.replace("/login");
-};
   const deleteMutation = useMutation({
     mutationFn: () =>
       deleteAccount(password),
 
     onSuccess: async () => {
-  await logout();
+      await logout();
 
-  queryClient.clear();   
+      queryClient.clear();
 
-  clearAuth();
+      clearAuth();
 
-  router.replace("/login");
-},
+      router.replace("/login");
+    },
   });
 
   return (
@@ -61,34 +52,21 @@ export function DangerZone() {
       </h2>
 
       <p className="mb-6 text-sm text-gray-600">
-        These actions permanently affect your account.
+        Permanently delete your account and all associated data.
       </p>
 
       <div className="space-y-3">
-
-        <Button
-          variant="outline"
-          onClick={logoutHandler}
-          className="justify-start"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
-
         {!showDelete ? (
           <Button
             variant="outline"
             className="justify-start border-red-300 text-red-600 hover:bg-red-50"
-            onClick={() =>
-              setShowDelete(true)
-            }
+            onClick={() => setShowDelete(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete Account
           </Button>
         ) : (
           <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-
             <p className="mb-4 text-sm text-red-700">
               This action cannot be undone.
               All projects, documents,
@@ -101,14 +79,11 @@ export function DangerZone() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
+                setPassword(e.target.value)
               }
             />
 
             <div className="mt-4 flex justify-end gap-2">
-
               <Button
                 variant="ghost"
                 onClick={() => {
@@ -129,12 +104,9 @@ export function DangerZone() {
               >
                 Delete Account
               </Button>
-
             </div>
-
           </div>
         )}
-
       </div>
     </Card>
   );

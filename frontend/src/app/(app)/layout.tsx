@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { EditProjectModal } from "@/features/dashboard/EditProjectModal";
 import { DeleteProjectModal } from "@/features/dashboard/DeleteProjectModal";
+import { AppTopbar } from "@/components/layout/AppTopbar";
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -27,14 +28,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
+  <Sidebar />
 
-      <main className="flex-1 overflow-hidden">
-        {children}
-      </main>
-      <CreateProjectModal />
-      <EditProjectModal />
-      <DeleteProjectModal />
-    </div>
+  <div className="flex flex-1 flex-col overflow-hidden">
+    <AppTopbar />
+
+    <main className="flex-1 overflow-hidden">
+      {children}
+    </main>
+  </div>
+
+  <CreateProjectModal />
+  <EditProjectModal />
+  <DeleteProjectModal />
+</div>
   );
 }
