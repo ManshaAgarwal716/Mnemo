@@ -13,11 +13,23 @@ from src.api.v1.dashboard import router as dashboard_router
 from src.api.v1.users import router as user_router
 from src.core.config import settings
 from fastapi.staticfiles import StaticFiles
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
+from src.core.rate_limit import limiter
 app = FastAPI(
     title="Mnemo API",
     redirect_slashes=False,
 )
+app.state.limiter = limiter
 
+app.add_exception_handler(
+    RateLimitExceeded,
+    _rate_limit_exceeded_handler,
+)
+app.add_middleware(
+    SlowAPIMiddleware,
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

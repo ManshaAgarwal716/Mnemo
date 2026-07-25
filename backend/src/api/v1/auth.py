@@ -1,8 +1,11 @@
+from fastapi import Request
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.database import get_db
 from src.users.dependencies import get_current_user
 from src.users.model import User
+from src.core.rate_limit import limiter
 from src.users.schema import (
     UserCreate,
     UserLogin,
@@ -35,7 +38,9 @@ oauth2_scheme = OAuth2PasswordBearer(
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit("3/hour")
 async def signup(
+    request: Request,
     user_data: UserCreate,
     db: AsyncSession = Depends(get_db),
 ):
@@ -55,8 +60,10 @@ async def signup(
     "/login",
     response_model=TokenResponse,
 )
+@limiter.limit("5/minute")
 async def login(
-       user_data: UserLogin,
+    request: Request,
+    user_data: UserLogin,
     db: AsyncSession = Depends(get_db),
 ):
     try:

@@ -3,8 +3,9 @@ from fastapi import (
     Depends,
     HTTPException,
     status,
+    Request,
 )
-
+from src.core.rate_limit import limiter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.database import get_db
@@ -61,7 +62,9 @@ async def update_me(
 
 
 @router.patch("/password")
+@limiter.limit("5/hour")
 async def change_password(
+    request: Request,
     password_data: PasswordUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -83,8 +86,10 @@ async def change_password(
             detail=str(e),
         )
 @router.delete("/me")
+@limiter.limit("3/hour")
 async def delete_account(
-    request: DeleteAccountRequest,
+    request: Request,
+    delete_request: DeleteAccountRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -93,7 +98,7 @@ async def delete_account(
         await user_service.delete_account(
             db=db,
             current_user=current_user,
-            password=request.password,
+            password=delete_request.password,
         )
 
         return {
