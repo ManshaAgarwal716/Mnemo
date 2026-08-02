@@ -21,7 +21,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6 p-8">
+      <div className="space-y-6 p-8">
         <Skeleton className="h-48 rounded-xl" />
         <Skeleton className="h-64 rounded-xl" />
         <Skeleton className="h-44 rounded-xl" />
@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-3xl p-8">
+      <div className="p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">
             Settings

@@ -31,7 +31,7 @@ export default function SearchPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="px-6 py-12">
         <SearchBar onSearch={handleSearch} />
 
         {showResults && (

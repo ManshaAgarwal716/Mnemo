@@ -10,7 +10,7 @@ export default function ActivityPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-5xl p-8">
+      <div className="p-8">
         <button
           onClick={() => router.push("/dashboard")}
           className="mb-6 flex items-center gap-2 text-sm text-gray-600 hover:text-primary"
