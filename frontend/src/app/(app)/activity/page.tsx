@@ -9,9 +9,9 @@ export default function ActivityPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-5xl p-8">
+        <div className="p-8">
         <button
           onClick={() => router.push("/dashboard")}
           className="mb-6 flex items-center gap-2 text-sm text-gray-600 hover:text-primary"
