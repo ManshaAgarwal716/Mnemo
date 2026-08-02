@@ -86,7 +86,7 @@ async def change_password(
             detail=str(e),
         )
 @router.delete("/me")
-@limiter.limit("3/hour")
+@limiter.limit("5/hour")
 async def delete_account(
     request: Request,
     delete_request: DeleteAccountRequest,

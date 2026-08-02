@@ -38,7 +38,7 @@ oauth2_scheme = OAuth2PasswordBearer(
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
-@limiter.limit("3/hour")
+@limiter.limit("5/hour")
 async def signup(
     request: Request,
     user_data: UserCreate,
