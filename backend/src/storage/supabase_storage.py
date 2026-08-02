@@ -13,26 +13,32 @@ class SupabaseStorage:
         self.bucket = settings.SUPABASE_BUCKET
 
     def upload_file(
-        self,
-        local_path: str,
-        storage_name: str,
-    ) -> str:
+    self,
+    local_path: str,
+    storage_name: str,
+) -> str:
 
-        with open(local_path, "rb") as f:
-            self.client.storage.from_(self.bucket).upload(
+     with open(local_path, "rb") as f:
+        try:
+            result = self.client.storage.from_(self.bucket).upload(
                 storage_name,
                 f,
                 {
                     "content-type": "application/pdf",
-                    "upsert": "true",
+                    "upsert": True,
                 },
             )
+            print(result)
 
-        return (
-            self.client.storage
-            .from_(self.bucket)
-            .get_public_url(storage_name)
-        )
+        except Exception as e:
+            print("SUPABASE ERROR:", repr(e))
+            raise
+
+     return (
+        self.client.storage
+        .from_(self.bucket)
+        .get_public_url(storage_name)
+    )
 
     def delete_file(
         self,
