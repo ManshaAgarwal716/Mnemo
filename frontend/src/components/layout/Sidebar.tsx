@@ -42,7 +42,7 @@ const { data: projects = [] } = useQuery({
 });
 const open = useProjectModalStore((state) => state.openCreate);
   return (
-    <aside className="w-56 border-r border-gray-200 bg-white flex flex-col h-screen">
+    <aside className="w-56 border-r border-gray-200 bg-white flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">
