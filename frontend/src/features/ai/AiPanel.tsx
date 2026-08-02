@@ -110,9 +110,9 @@ const clearMutation = useMutation({
   return (
     <div
 className={cn(
-  "flex h-full min-h-0 flex-col bg-white overflow-hidden",
+  "flex h-full min-h-0 flex-col bg-white overflow-hidden border-l border-gray-200",
         mode === "compact"
-          ? "w-full"
+          ? "w-[270px] shrink-0"
           : "flex-1"
       )}
     >
