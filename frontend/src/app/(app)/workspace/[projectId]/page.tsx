@@ -101,49 +101,44 @@ export default function WorkspaceProjectPage() {
   ]);
 
   return (
-    <div className="flex flex-1 min-w-0 min-h-0 overflow-hidden">
+  <div className="flex flex-1 min-w-0 min-h-0">
 
-      <WorkspaceSidebar projectId={projectId} />
+    <WorkspaceSidebar projectId={projectId} />
 
-      <div className="flex flex-1 basis-0 min-w-0 min-h-0 flex-col">
+    <div className="flex flex-1 min-w-0 min-h-0 flex-col">
+      <TabsBar />
 
-        <TabsBar />
-
-        <div className="flex flex-1 basis-0 min-w-0 min-h-0 overflow-hidden">
-
-          {activeTab ? (
-            activeTab.type === "note" ? (
-              <NoteEditor
-                noteId={activeTab.documentId}
-                projectId={projectId}
-              />
-            ) : (
-              <PdfViewer
-                documentId={activeTab.documentId}
-              />
-            )
+      <div className="flex-1 min-w-0 min-h-0">
+        {activeTab ? (
+          activeTab.type === "note" ? (
+            <NoteEditor
+              noteId={activeTab.documentId}
+              projectId={projectId}
+            />
           ) : (
-            <div className="flex flex-1 items-center justify-center bg-gray-50">
-              <EmptyState
-                icon={FileText}
-                title="No document selected"
-                description="Select a document or note from the sidebar to start reading"
-              />
-            </div>
-          )}
-
-        </div>
+            <PdfViewer
+              documentId={activeTab.documentId}
+            />
+          )
+        ) : (
+          <div className="flex h-full items-center justify-center bg-gray-50">
+            <EmptyState
+              icon={FileText}
+              title="No document selected"
+              description="Select a document or note from the sidebar to start reading"
+            />
+          </div>
+        )}
       </div>
-
-      {activeConversationId && (
-        <div className="w-[270px] shrink-0 border-l border-gray-200">
-          <AiPanel
-            conversationId={activeConversationId}
-            mode="compact"
-          />
-        </div>
-      )}
-
     </div>
-  );
+
+    {activeConversationId && (
+      <AiPanel
+        conversationId={activeConversationId}
+        mode="compact"
+      />
+    )}
+
+  </div>
+);
 }
