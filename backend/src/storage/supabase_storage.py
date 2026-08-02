@@ -23,10 +23,10 @@ class SupabaseStorage:
             result = self.client.storage.from_(self.bucket).upload(
                 storage_name,
                 f,
-                {
-                    "content-type": "application/pdf",
-                    "upsert": True,
-                },
+                file_options={
+    "content-type": "application/pdf",
+    "upsert": "true",
+}
             )
             print(result)
 
