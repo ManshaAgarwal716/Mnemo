@@ -12,7 +12,6 @@ from src.api.v1.search import router as search_router
 from src.api.v1.dashboard import router as dashboard_router
 from src.api.v1.users import router as user_router
 from src.core.config import settings
-from fastapi.staticfiles import StaticFiles
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -37,8 +36,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
 app.include_router(auth_router,prefix="/api/v1",)
 app.include_router(project_router,prefix="/api/v1",)
 app.include_router(document_router,prefix="/api/v1",)
