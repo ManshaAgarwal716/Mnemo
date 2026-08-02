@@ -21,7 +21,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-col h-full">
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-3xl space-y-6 p-8">
         <Skeleton className="h-48 rounded-xl" />
@@ -38,7 +38,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl p-8">
         <div className="mb-8">
@@ -57,6 +57,7 @@ export default function SettingsPage() {
           <PasswordCard />
 
           <DangerZone />
+        </div>
         </div>
       </div>
     </div>

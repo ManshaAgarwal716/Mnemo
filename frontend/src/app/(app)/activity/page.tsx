@@ -9,7 +9,7 @@ export default function ActivityPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-5xl p-8">
         <button

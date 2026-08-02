@@ -7,7 +7,7 @@ import { ReportIssueCard } from "@/features/help/ReportIssueCard";
 
 export default function HelpPage() {
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-4xl space-y-6 p-8">
         <div>

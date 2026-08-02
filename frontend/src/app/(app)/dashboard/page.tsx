@@ -7,7 +7,7 @@ import { RecentActivity } from "@/features/dashboard/RecentActivity";
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-6xl mx-auto p-8">
         <DashboardHeader />

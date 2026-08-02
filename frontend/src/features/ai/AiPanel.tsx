@@ -112,7 +112,7 @@ const clearMutation = useMutation({
 className={cn(
   "flex h-full min-h-0 flex-col bg-white overflow-hidden",
         mode === "compact"
-          ? "w-full"
+          ? "w-[270px] border-l border-gray-200"
           : "flex-1"
       )}
     >
