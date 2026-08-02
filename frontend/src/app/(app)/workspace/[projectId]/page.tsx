@@ -108,7 +108,7 @@ export default function WorkspaceProjectPage() {
     <div className="flex flex-1 min-w-0 min-h-0 flex-col">
       <TabsBar />
 
-      <div className="flex-1 min-w-0 min-h-0">
+      <div className="flex flex-1 min-w-0 min-h-0">
         {activeTab ? (
           activeTab.type === "note" ? (
             <NoteEditor

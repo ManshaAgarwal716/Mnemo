@@ -23,7 +23,7 @@ export function TabsBar() {
   }
 
   return (
-    <div className="w-full border-b border-gray-200 bg-gray-50">
+    <div className="w-full shrink-0 border-b border-gray-200 bg-gray-50">
       <div className="w-full overflow-x-auto overflow-y-hidden">
         <div className="inline-flex min-w-max items-center gap-1 px-2 py-1">
           {tabs.map((tab) => {
