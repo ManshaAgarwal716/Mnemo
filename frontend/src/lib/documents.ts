@@ -1,6 +1,8 @@
 import api from "@/lib/api";
 import { Document } from "@/types";
-
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const BACKEND_URL = API_URL.replace("/api/v1", "");
 export async function getDocuments(projectId: string): Promise<Document[]> {
   const response = await api.get(`/documents/project/${projectId}`);
 
@@ -9,7 +11,7 @@ export async function getDocuments(projectId: string): Promise<Document[]> {
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `http://localhost:8000/${doc.file_path}`,
+    filePath: `${BACKEND_URL}/${doc.file_path}`,
     fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
@@ -26,7 +28,7 @@ export async function getDocument(id: string): Promise<Document> {
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `http://localhost:8000/${doc.file_path}`,
+    filePath: `${BACKEND_URL}/${doc.file_path}`,
     fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
@@ -62,7 +64,7 @@ export async function uploadDocument(data: {
     title: doc.title,
     fileName: doc.file_name,
     fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
-    filePath: `http://localhost:8000/${doc.file_path}`,
+    filePath: `${BACKEND_URL}/${doc.file_path}`,
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
   };
@@ -83,7 +85,7 @@ export async function renameDocument(
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `http://localhost:8000/${doc.file_path}`,
+    filePath: `${BACKEND_URL}/${doc.file_path}`,
     fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
