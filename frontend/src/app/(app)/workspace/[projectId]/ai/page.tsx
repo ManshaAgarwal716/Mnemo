@@ -39,7 +39,8 @@ export default function AiPage() {
   });
 
   return (
-    <div className="flex h-full overflow-hidden bg-gray-50">
+    return (
+    <div className="flex h-screen overflow-hidden bg-gray-50">
       <div className="w-[260px] shrink-0 border-r border-gray-200 bg-white">
         <ConversationHistory
           projectId={projectId}
@@ -49,7 +50,7 @@ export default function AiPage() {
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 min-h-0 flex-1 flex-col">
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
