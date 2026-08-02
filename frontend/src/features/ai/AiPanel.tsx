@@ -109,8 +109,8 @@ const clearMutation = useMutation({
 
   return (
     <div
-      className={cn(
-        "flex h-full flex-col bg-white",
+  className={cn(
+    "flex h-full min-h-0 flex-col bg-white",
         mode === "compact"
           ? "w-[270px] border-l border-gray-200"
           : "flex-1"
@@ -164,14 +164,17 @@ const clearMutation = useMutation({
         className="px-4"
       />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
         {activeAiTab === "chat" && (
-          <>
-            <ChatThread conversationId={conversationId} />
-            <QuickActions />
-            <ChatInput conversationId={conversationId} />
-          </>
-        )}
+      <div className="flex flex-1 min-h-0 flex-col">
+        <ChatThread conversationId={conversationId} />
+
+        <div className="shrink-0">
+          <QuickActions />
+          <ChatInput conversationId={conversationId} />
+        </div>
+      </div>
+    )}
 
         {activeAiTab === "summary" && (
           <SummaryTab conversationId={conversationId} />
