@@ -87,7 +87,7 @@ useEffect(() => {
     <div className="flex h-full">
       <WorkspaceSidebar projectId={projectId} />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <TabsBar />
         
         {activeTab ? (
@@ -113,14 +113,16 @@ useEffect(() => {
       </div>
 
      {activeConversationId ? (
-  <AiPanel
+  <div className="w-[320px] shrink-0 border-l border-gray-200">
+    <AiPanel
     conversationId={activeConversationId}
     mode="compact"
-  />
-) : (
-  <div className="w-[270px] border-l border-gray-200 bg-white flex items-center justify-center text-sm text-gray-500">
-    Start a conversation from AI Assistant
+   />
   </div>
+) : (
+  <div className="w-[320px] shrink-0 border-l border-gray-200 bg-white flex items-center justify-center text-sm text-gray-500">
+  Start a conversation from AI Assistant
+</div>
 )}
     </div>
   );
