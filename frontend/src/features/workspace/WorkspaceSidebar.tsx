@@ -338,18 +338,23 @@ const deleteMutation = useMutation({
         />
 
         <Button
-          size="sm"
-          variant="outline"
-          className="w-full justify-start"
-          onClick={handleUploadClick}
-          disabled={uploadMutation.isPending}
-        >
-          <Upload className="w-3.5 h-3.5 mr-2" />
+  size="sm"
+  variant="outline"
+  className="w-full justify-start"
+  onClick={handleUploadClick}
+  disabled={uploadMutation.isPending}
+>
+  <Upload className="mr-2 h-3.5 w-3.5 shrink-0" />
 
-          {uploadMutation.isPending
-            ? `Uploading ${uploadingFileName}...`
-            : "Upload PDF"}
-        </Button>
+  <span
+    className="truncate"
+    title={uploadingFileName ?? ""}
+  >
+    {uploadMutation.isPending
+      ? uploadingFileName
+      : "Upload PDF"}
+  </span>
+</Button>
 
         <Button
           size="sm"

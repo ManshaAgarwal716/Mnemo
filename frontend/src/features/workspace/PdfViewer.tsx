@@ -3,8 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDocument } from "@/lib/documents";
 import {
-  ChevronLeft,
-  ChevronRight,
   Download,
   Maximize2,
 } from "lucide-react";
@@ -37,31 +35,26 @@ export function PdfViewer({ documentId }: PdfViewerProps) {
 
   return (
     <div className="flex flex-col flex-1 bg-gray-50">
-      {/* Toolbar */}
       <div className="h-12 border-b bg-white flex items-center justify-between px-4">
 
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-
-          <button className="p-2 hover:bg-gray-100 rounded">
-            <ChevronRight className="w-4 h-4" />
-          </button>
-
-          <span className="text-sm text-gray-600">
-            {document.title}
-          </span>
-        </div>
+        <div className="flex min-w-0 items-center">
+  <span
+    className="truncate text-sm font-medium text-gray-700"
+    title={document.title}
+  >
+    {document.title}
+  </span>
+       </div>
 
         <div className="flex items-center gap-2">
 
           <a
-            href={document.filePath}
-            download
-            target="_blank"
-            className="p-2 hover:bg-gray-100 rounded"
-          >
+  href={document.filePath}
+  download
+  target="_blank"
+  rel="noopener noreferrer"
+  className="rounded p-2 transition-colors hover:bg-gray-100"
+>
             <Download className="w-4 h-4" />
           </a>
 
@@ -74,8 +67,6 @@ export function PdfViewer({ documentId }: PdfViewerProps) {
 
         </div>
       </div>
-
-      {/* PDF */}
 
       <div className="flex-1">
         <iframe
