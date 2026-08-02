@@ -84,7 +84,7 @@ useEffect(() => {
 ]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full overflow-hidden">
       <WorkspaceSidebar projectId={projectId} />
       
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
@@ -113,7 +113,7 @@ useEffect(() => {
       </div>
 
      {activeConversationId ? (
-  <div className="w-[320px] shrink-0 border-l border-gray-200 min-h-0">
+  <div className="w-[320px] shrink-0 border-l border-gray-200 flex flex-col min-h-0">
     <AiPanel
     conversationId={activeConversationId}
     mode="compact"
