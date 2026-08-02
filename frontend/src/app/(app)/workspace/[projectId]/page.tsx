@@ -88,36 +88,38 @@ useEffect(() => {
       <WorkspaceSidebar projectId={projectId} />
       
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        <TabsBar />
-        
-        {activeTab ? (
-          activeTab.type === "note" ? (
-            <NoteEditor
-  noteId={activeTab.documentId}
-  projectId={projectId}
-/>
-          ) : (
-            <PdfViewer
-  documentId={activeTab.documentId}
-/>
-          )
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <EmptyState
-              icon={FileText}
-              title="No document selected"
-              description="Select a document or note from the sidebar to start reading"
-            />
-          </div>
-        )}
-      </div>
+  <TabsBar />
 
-     {activeConversationId && (
+  <div className="flex-1 min-h-0 overflow-hidden">
+    {activeTab ? (
+      activeTab.type === "note" ? (
+        <NoteEditor
+          noteId={activeTab.documentId}
+          projectId={projectId}
+        />
+      ) : (
+        <PdfViewer
+          documentId={activeTab.documentId}
+        />
+      )
+    ) : (
+      <div className="flex h-full items-center justify-center bg-gray-50">
+        <EmptyState
+          icon={FileText}
+          title="No document selected"
+          description="Select a document or note from the sidebar to start reading"
+        />
+      </div>
+    )}
+  </div>
+</div>
+
+     {/* {activeConversationId && (
   <AiPanel
     conversationId={activeConversationId}
     mode="compact"
    />
-)}
+)} */}
     </div>
   );
 }
