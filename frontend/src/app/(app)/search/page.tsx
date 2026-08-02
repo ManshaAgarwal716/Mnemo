@@ -30,8 +30,9 @@ export default function SearchPage() {
   const showResults = debouncedQuery.length > 2;
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="px-6 py-12">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-5xl mx-auto px-6 py-12">
         <SearchBar onSearch={handleSearch} />
 
         {showResults && (
@@ -60,6 +61,7 @@ export default function SearchPage() {
             Type at least 3 characters to search
           </div>
         )}
+        </div>
       </div>
     </div>
   );
