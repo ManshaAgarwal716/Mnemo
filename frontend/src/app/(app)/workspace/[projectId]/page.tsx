@@ -84,10 +84,10 @@ useEffect(() => {
 ]);
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       <WorkspaceSidebar projectId={projectId} />
       
-      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+      <div className="flex-1 flex flex-col min-w-0">
         <TabsBar />
         
         {activeTab ? (
@@ -112,17 +112,11 @@ useEffect(() => {
         )}
       </div>
 
-     {activeConversationId ? (
-  <div className="w-[320px] shrink-0 border-l border-gray-200 flex flex-col min-h-0">
-    <AiPanel
+     {activeConversationId && (
+  <AiPanel
     conversationId={activeConversationId}
     mode="compact"
    />
-  </div>
-) : (
-  <div className="w-[320px] shrink-0 border-l border-gray-200 bg-white flex items-center justify-center text-sm text-gray-500">
-  Start a conversation from AI Assistant
-</div>
 )}
     </div>
   );
