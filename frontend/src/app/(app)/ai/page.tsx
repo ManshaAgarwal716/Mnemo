@@ -202,7 +202,7 @@ export default function AiPage() {
 
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 min-h-0 flex-1 flex-col">
 
         <div className="border-b border-gray-200 bg-white px-6 py-4">
 
@@ -231,18 +231,13 @@ export default function AiPage() {
 
         </div>
 
-        <div className="flex flex-1">
-
-          {activeConversationId ? (
-
-            <AiPanel
-              conversationId={
-                activeConversationId
-              }
-              mode="full"
-            />
-
-          ) : (
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+  {activeConversationId ? (
+    <AiPanel
+      conversationId={activeConversationId}
+      mode="full"
+    />
+  ) : (
 
             <div className="flex flex-1 items-center justify-center bg-white">
 

@@ -39,8 +39,7 @@ export default function AiPage() {
   });
 
   return (
-    return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-full overflow-hidden bg-gray-50">
       <div className="w-[260px] shrink-0 border-r border-gray-200 bg-white">
         <ConversationHistory
           projectId={projectId}
@@ -72,7 +71,7 @@ export default function AiPage() {
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-1">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
           {activeConversationId ? (
             <AiPanel
               conversationId={activeConversationId}

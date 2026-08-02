@@ -110,7 +110,7 @@ const clearMutation = useMutation({
   return (
     <div
 className={cn(
-"flex h-full min-h-0 flex-col bg-white",
+  "flex h-full min-h-0 flex-col bg-white overflow-hidden",
         mode === "compact"
           ? "w-[270px] border-l border-gray-200"
           : "flex-1"
@@ -165,25 +165,25 @@ className={cn(
       />
 
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
-        {activeAiTab === "chat" && (
-      <div className="flex flex-1 min-h-0 flex-col">
-        <ChatThread conversationId={conversationId} />
+  {activeAiTab === "chat" && (
+    <div className="flex flex-1 min-h-0 flex-col">
+      <ChatThread conversationId={conversationId} />
 
-        <div className="shrink-0">
-          <QuickActions />
-          <ChatInput conversationId={conversationId} />
-        </div>
+      <div className="shrink-0">
+        <QuickActions />
+        <ChatInput conversationId={conversationId} />
       </div>
-    )}
+    </div>
+  )}
 
-        {activeAiTab === "summary" && (
-          <SummaryTab conversationId={conversationId} />
-        )}
+  {activeAiTab === "summary" && (
+    <SummaryTab conversationId={conversationId} />
+  )}
 
-        {activeAiTab === "related" && (
-          <RelatedTab conversationId={conversationId} />
-        )}
-      </div>
+  {activeAiTab === "related" && (
+    <RelatedTab conversationId={conversationId} />
+  )}
+</div>
       <RenameConversationDialog
   open={renameOpen}
   currentTitle={conversation?.title ?? ""}
