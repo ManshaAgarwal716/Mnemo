@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str
     LLM_PROVIDER: str = "groq" 
     GROQ_API_KEY: str
+    SUPABASE_URL: str
+    SUPABASE_SERVICE_KEY: str
+    SUPABASE_BUCKET: str = "pdfs"
 
     model_config = SettingsConfigDict(
         env_file=".env",

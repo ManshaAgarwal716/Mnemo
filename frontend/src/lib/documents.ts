@@ -1,25 +1,44 @@
 import api from "@/lib/api";
 import { Document } from "@/types";
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+
 const BACKEND_URL = API_URL.replace("/api/v1", "");
-export async function getDocuments(projectId: string): Promise<Document[]> {
-  const response = await api.get(`/documents/project/${projectId}`);
+
+function getFilePath(path: string) {
+  return path.startsWith("http")
+    ? path
+    : `${BACKEND_URL}/${path}`;
+}
+
+export async function getDocuments(
+  projectId: string
+): Promise<Document[]> {
+  const response = await api.get(
+    `/documents/project/${projectId}`
+  );
 
   return response.data.map((doc: any) => ({
     id: doc.id,
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `${BACKEND_URL}/${doc.file_path}`,
-    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    filePath: getFilePath(doc.file_path),
+    fileType: doc.file_type.includes("pdf")
+      ? "pdf"
+      : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
   }));
 }
 
-export async function getDocument(id: string): Promise<Document> {
-  const response = await api.get(`/documents/${id}`);
+export async function getDocument(
+  id: string
+): Promise<Document> {
+  const response = await api.get(
+    `/documents/${id}`
+  );
 
   const doc = response.data;
 
@@ -28,8 +47,10 @@ export async function getDocument(id: string): Promise<Document> {
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `${BACKEND_URL}/${doc.file_path}`,
-    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    filePath: getFilePath(doc.file_path),
+    fileType: doc.file_type.includes("pdf")
+      ? "pdf"
+      : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
   };
@@ -63,8 +84,10 @@ export async function uploadDocument(data: {
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
-    filePath: `${BACKEND_URL}/${doc.file_path}`,
+    fileType: doc.file_type.includes("pdf")
+      ? "pdf"
+      : "web",
+    filePath: getFilePath(doc.file_path),
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
   };
@@ -74,9 +97,12 @@ export async function renameDocument(
   id: string,
   title: string
 ): Promise<Document> {
-  const response = await api.patch(`/documents/${id}`, {
-    title,
-  });
+  const response = await api.patch(
+    `/documents/${id}`,
+    {
+      title,
+    }
+  );
 
   const doc = response.data;
 
@@ -85,14 +111,18 @@ export async function renameDocument(
     projectId: doc.project_id,
     title: doc.title,
     fileName: doc.file_name,
-    filePath: `${BACKEND_URL}/${doc.file_path}`,
-    fileType: doc.file_type.includes("pdf") ? "pdf" : "web",
+    filePath: getFilePath(doc.file_path),
+    fileType: doc.file_type.includes("pdf")
+      ? "pdf"
+      : "web",
     fileSize: doc.file_size,
     updatedAt: doc.updated_at,
   };
 }
 
-export async function deleteDocument(id: string): Promise<void> {
+export async function deleteDocument(
+  id: string
+): Promise<void> {
   await api.delete(`/documents/${id}`);
 }
 
@@ -106,8 +136,6 @@ export function downloadDocument(
   link.download = fileName ?? "";
 
   document.body.appendChild(link);
-
   link.click();
-
   document.body.removeChild(link);
 }

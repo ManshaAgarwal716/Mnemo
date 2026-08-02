@@ -17,20 +17,21 @@ from src.document_chunks.service import (
 class DocumentService:
 
     async def create_document(
-        self,
-        db: AsyncSession,
-        project_id: uuid.UUID,
-        document_data: DocumentCreate,
-        file_name: str,
-        file_path: str,
-        file_type: str,
-        file_size: int,
-    ) -> Document:
+    self,
+    db: AsyncSession,
+    project_id: uuid.UUID,
+    document_data: DocumentCreate,
+    file_name: str,
+    file_path: str,
+    temp_path: str,
+    file_type: str,
+    file_size: int,
+) -> Document:
 
         document = Document(
             title=document_data.title,
             file_name=file_name,
-            file_path=file_path,
+            file_path=file_path,   
             file_type=file_type,
             file_size=file_size,
             project_id=project_id,
@@ -42,15 +43,17 @@ class DocumentService:
         )
 
         text = processing_service.extract_text(
-            created_document.file_path,
+            temp_path,
         )
 
         chunks = processing_service.chunk_text(
             text,
         )
+
         embeddings = processing_service.generate_embeddings(
-    chunks,
-)
+            chunks,
+        )
+
         await document_chunk_service.create_chunks(
             db=db,
             document_id=created_document.id,

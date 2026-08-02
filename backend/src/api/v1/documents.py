@@ -1,7 +1,7 @@
 import os
 import uuid
 import shutil
-
+from src.storage.supabase_storage import supabase_storage
 from fastapi import (
     APIRouter,
     Depends,
@@ -28,9 +28,9 @@ router = APIRouter(
     tags=["Documents"],
 )
 
-UPLOAD_DIR = "uploads"
+TEMP_DIR = "temp"
 
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 
 @router.post(
@@ -46,19 +46,25 @@ async def upload_document(
     current_user: User = Depends(get_current_user),
 ):
 
-    file_path = os.path.join(
-        UPLOAD_DIR,
-        file.filename,
-    )
+    temp_path = os.path.join(
+    TEMP_DIR,
+    file.filename,
+)
 
-    with open(file_path, "wb") as buffer:
+    with open(temp_path, "wb") as buffer:
         shutil.copyfileobj(
             file.file,
             buffer,
         )
 
-    file_size = os.path.getsize(file_path)
+    file_size = os.path.getsize(temp_path)
+    extension = os.path.splitext(file.filename)[1]
+    storage_name = f"{uuid.uuid4()}{extension}"
 
+    public_url = supabase_storage.upload_file(
+    temp_path,
+    storage_name,
+)
     document = await document_service.create_document(
         db=db,
         project_id=project_id,
@@ -66,11 +72,12 @@ async def upload_document(
             title=title,
         ),
         file_name=file.filename,
-        file_path=file_path,
+        file_path=public_url,
+        temp_path=temp_path,
         file_type=file.content_type,
         file_size=file_size,
     )
-
+    os.remove(temp_path)
     return document
 
 
@@ -156,8 +163,8 @@ async def delete_document(
             document_id,
         )
 
-        if os.path.exists(document.file_path):
-            os.remove(document.file_path)
+        file_name = document.file_path.split("/")[-1]
+        supabase_storage.delete_file(file_name)
 
         await document_service.delete_document(
             db,
