@@ -58,7 +58,7 @@ export function RelatedTab({
                   variant="outline"
                   size="sm"
                 >
-                  {Math.round(item.similarity * 100)}%
+                  {Math.round(item.similarity)}%
                 </Badge>
               </div>
 

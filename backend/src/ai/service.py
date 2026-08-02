@@ -118,14 +118,15 @@ class AIService:
         )
 
         context = "\n".join(
-            chunk.content
-            for chunk, _ in chunks
-        )
+    item["chunk"].content
+    for item in chunks
+)
 
         sources = []
         seen = set()
 
-        for _, document in chunks:
+        for item in chunks:
+            document = item["document"]
             if document.id in seen:
                 continue
 
