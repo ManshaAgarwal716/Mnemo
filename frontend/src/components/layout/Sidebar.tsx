@@ -15,7 +15,6 @@ import {
   Activity,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/Badge";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/lib/projects";
 import { useProjectModalStore } from "@/store/projectModalStore";
@@ -136,9 +135,6 @@ const handleProtectedNavigation = (path: string) => {
                   style={{ backgroundColor: project.color }}
                 />
                 <span className="truncate flex-1">{project.name}</span>
-                <Badge variant="gray" className="text-xs">
-                  {project.documentCount}
-                </Badge>
               </Link>
             ))}
           </div>
