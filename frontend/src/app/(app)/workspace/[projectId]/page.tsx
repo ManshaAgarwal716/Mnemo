@@ -121,13 +121,13 @@ export default function WorkspaceProjectPage() {
             />
           )
         ) : (
-          <div className="flex h-full items-center justify-center bg-gray-50">
-            <EmptyState
-              icon={FileText}
-              title="No document selected"
-              description="Select a document or note from the sidebar to start reading"
-            />
-          </div>
+          <div className="flex flex-1 min-w-0 min-h-0 items-center justify-center bg-gray-50">
+  <EmptyState
+    icon={FileText}
+    title="No document selected"
+    description="Select a document or note from the sidebar to start reading"
+  />
+</div>
         )}
       </div>
     </div>

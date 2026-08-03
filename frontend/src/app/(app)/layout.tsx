@@ -33,7 +33,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   <div className="flex flex-1 flex-col overflow-hidden">
     <AppTopbar />
 
-    <main className="flex flex-1 min-w-0 min-h-0 overflow-hidden bg-blue-100">
+    <main className="flex flex-1 min-w-0 min-h-0 overflow-hidden">
   {children}
 </main>
   </div>
