@@ -108,14 +108,14 @@ const clearMutation = useMutation({
 
 
   return (
-    <div
-className={cn(
-  "flex h-full min-h-0 flex-col bg-white overflow-hidden border-l border-gray-200",
-        mode === "compact"
-          ? "w-[270px] shrink-0"
-          : "flex-1"
-      )}
-    >
+     <div
+    className={cn(
+      "flex flex-1 h-full min-w-0 min-h-0 flex-col overflow-hidden bg-white border-l border-gray-200",
+      mode === "compact"
+        ? "w-[270px] shrink-0 flex-none"
+        : "w-full"
+    )}
+  >
       <div className="border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -164,10 +164,12 @@ className={cn(
         className="px-4"
       />
 
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+      <div className="flex flex-1 w-full min-w-0 min-h-0 flex-col overflow-hidden">
   {activeAiTab === "chat" && (
     <div className="flex flex-1 min-h-0 flex-col">
-      <ChatThread conversationId={conversationId} />
+      <div className="flex-1 min-w-0 min-h-0">
+  <ChatThread conversationId={conversationId} />
+</div>
 
       <div className="shrink-0">
         <QuickActions />

@@ -42,7 +42,7 @@ export function ChatThread({ conversationId }: ChatThreadProps) {
   return (
     <div
   ref={scrollRef}
-  className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4"
+  className="h-full w-full overflow-y-auto p-4 space-y-4"
 >
       {messages.map((message) => (
         <MessageBubble key={message.id} message={message} />
