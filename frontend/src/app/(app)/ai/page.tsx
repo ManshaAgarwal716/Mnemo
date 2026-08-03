@@ -148,7 +148,7 @@ export default function AiPage() {
 });
 
   return (
-    <div className="flex h-full overflow-hidden bg-gray-50">
+    <div className="flex flex-1 min-w-0 min-h-0 overflow-hidden bg-gray-50">
 
       <div className="w-[260px] shrink-0 border-r border-gray-200 bg-white">
 
