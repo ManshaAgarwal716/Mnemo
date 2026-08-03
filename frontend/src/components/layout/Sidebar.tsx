@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -14,11 +14,11 @@ import {
   Brain,
   Activity,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/Badge";
 import { useQuery } from "@tanstack/react-query";
 import { getProjects } from "@/lib/projects";
 import { useProjectModalStore } from "@/store/projectModalStore";
-import { useWorkspaceStore } from "@/store/workspaceStore";
 import { useAuthStore } from "@/store/authStore";
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -41,6 +41,20 @@ const { data: projects = [] } = useQuery({
   enabled: !!user,
 });
 const open = useProjectModalStore((state) => state.openCreate);
+const router = useRouter();
+
+const handleProtectedNavigation = (path: string) => {
+  if (projects.length === 0) {
+    toast.warning("Create a project first", {
+      description:
+        "Create your first project to access the Workspace and AI Assistant.",
+    });
+
+    return;
+  }
+
+  router.push(path);
+};
   return (
     <aside className="w-56 border-r border-gray-200 bg-white flex flex-col h-screen">
       <div className="p-4 border-b border-gray-200">
@@ -57,11 +71,24 @@ const open = useProjectModalStore((state) => state.openCreate);
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
-              <Link
+              <button
                 key={item.href}
-                href={item.href}
+                onClick={() => {
+                  if (
+                    (item.href === "/workspace" || item.href === "/ai") &&
+                    projects.length === 0
+                  ) {
+                    toast.warning("Create a project first", {
+                      description:
+                        "Create your first project to access the Workspace and AI Assistant.",
+                    });
+                    return;
+                  }
+
+                  router.push(item.href);
+                }}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+                  "flex w-full items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
                   isActive
                     ? "bg-primary-light text-primary"
                     : "text-gray-700 hover:bg-gray-100"
@@ -69,13 +96,13 @@ const open = useProjectModalStore((state) => state.openCreate);
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
-              </Link>
-            );
+              </button>
+                          );
           })}
-          <Link
-   href="/ai"
+          <button
+  onClick={() => handleProtectedNavigation("/ai")}
   className={cn(
-    "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+    "flex w-full items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
     pathname.includes("/ai")
       ? "bg-primary-light text-primary"
       : "text-gray-700 hover:bg-gray-100"
@@ -83,7 +110,7 @@ const open = useProjectModalStore((state) => state.openCreate);
 >
   <MessageSquare className="w-4 h-4" />
   AI Assistant
-</Link>
+</button>
         </div>
 
         <div>

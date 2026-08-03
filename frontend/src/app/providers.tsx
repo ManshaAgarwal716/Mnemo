@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState } from "react";
-
+import { Toaster } from "sonner";
 export function Providers({
   children,
 }: {
@@ -29,6 +29,7 @@ export function Providers({
     >
       <QueryClientProvider client={queryClient}>
         {children}
+        <Toaster richColors position="top-right" />
       </QueryClientProvider>
     </GoogleOAuthProvider>
   );
