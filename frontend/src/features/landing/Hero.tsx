@@ -1,52 +1,36 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="pt-32 pb-24 px-6 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-5xl mx-auto text-center">
+    <section className="landing-hero relative isolate overflow-hidden">
+      <div className="landing-hero-image" aria-hidden="true" />
+      <div className="landing-hero-wash" aria-hidden="true" />
+      <div className="relative mx-auto flex min-h-[690px] max-w-7xl items-center px-6 py-24 md:min-h-[760px] lg:px-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          className="max-w-[650px]"
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <Badge variant="primary" size="md" className="mb-8 shadow-sm">
-            <Sparkles className="w-3 h-3 mr-1.5" />
-            AI-native research workspace
-          </Badge>
-
-          <h1 className="text-6xl font-semibold text-gray-900 mb-6 leading-tight tracking-tight">
-            Your research, amplified
-            <br />
-            <span className="text-primary">by semantic AI</span>
+          <span className="landing-eyebrow"><Sparkles size={14} /> A calmer way to discover</span>
+          <h1 className="mt-7 font-serif text-[clamp(3.4rem,6vw,6.5rem)] leading-[.99] tracking-[-.055em] text-[#352a22]">
+            Give your curiosity <em className="font-normal text-[#76543e]">room to grow.</em>
           </h1>
-
-          <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Mnemo combines browser-like navigation, PDF analysis, and contextual
-            AI chat into one intelligent workspace. No more context switching—just
-            seamless research with persistent memory.
+          <p className="mt-8 max-w-[540px] text-lg leading-relaxed text-[#625649] md:text-xl">
+            Gather papers, follow ideas, and ask better questions. Mnemo keeps your research connected, from the first spark to the insight that stays.
           </p>
-
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/signup">
-              <Button size="lg" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all">
-                Get started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="secondary" size="lg" className="shadow-sm hover:shadow-md transition-all">
-                Sign in
-              </Button>
-            </Link>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <Link href="/signup" className="landing-button landing-button-primary">Start exploring <ArrowRight size={18} /></Link>
+            <Link href="/login" className="landing-button landing-button-secondary">Sign in</Link>
           </div>
+          <div className="mt-14 flex items-center gap-3 text-sm text-[#756856]"><span className="h-px w-10 bg-[#a89074]" /> Your thinking, beautifully organized</div>
         </motion.div>
       </div>
+      <div className="landing-hero-bottom" aria-hidden="true" />
     </section>
   );
 }

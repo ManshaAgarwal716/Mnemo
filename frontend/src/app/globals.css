@@ -139,3 +139,35 @@ body {
 .ProseMirror code {
   font-family: monospace;
 }
+.landing-page { background:#f5f0e7; }
+.landing-hero { background:#e9d7bb; }
+.landing-hero-image { position:absolute;inset:0;background:url('/botanical-research.png') center center/cover no-repeat; animation:landing-image-drift 22s ease-in-out infinite alternate; }
+.landing-hero-wash { position:absolute;inset:0;background:linear-gradient(90deg,rgba(248,239,220,.98) 0%,rgba(248,239,220,.95) 26%,rgba(248,239,220,.62) 48%,rgba(248,239,220,.05) 76%); }
+.landing-hero-bottom { position:absolute;bottom:-1px;left:0;right:0;height:48px;background:#f5f0e7;clip-path:ellipse(70% 55% at 50% 100%); }
+.landing-eyebrow { display:inline-flex;align-items:center;gap:9px;border:1px solid #bba58b;border-radius:99px;padding:9px 15px;color:#76543e;background:#f8eddaaa;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase; }
+.landing-button { display:inline-flex;align-items:center;justify-content:center;gap:13px;min-height:52px;padding:0 25px;border-radius:999px;font-weight:600;transition:transform .25s,background .25s,box-shadow .25s; }
+.landing-button:hover,.landing-footer-cta:hover { transform:translateY(-3px); }
+.landing-button-primary { background:#76543e;color:#fff9f1;box-shadow:0 12px 25px #76543e35; }
+.landing-button-primary:hover { background:#5c3d2b;box-shadow:0 17px 30px #76543e45; }
+.landing-button-secondary { color:#4f3d2e;border:1px solid #a9937b;background:#f7ead5aa; }
+.landing-button-secondary:hover { background:#fff8e9; }
+.landing-features { background:linear-gradient(180deg,#f5f0e7,#eee4d6); }
+.landing-section-label { color:#8a6c51;font-size:12px;font-weight:700;letter-spacing:.24em; }
+.landing-feature-arc { pointer-events:none;position:absolute;width:1100px;height:550px;border:1px solid #bba99255;border-radius:50%;transform:rotate(-17deg); }
+.landing-feature-arc-one { right:-460px;top:-200px; }.landing-feature-arc-two { right:-530px;top:-140px; }
+.landing-feature-card { position:relative;min-height:245px;padding:29px;border:1px solid #ded2c1;background:#fbf8f1d9;border-radius:22px;box-shadow:0 10px 28px #5b44340a;transition:transform .3s,box-shadow .3s; }
+.landing-feature-card:hover { transform:translateY(-6px);box-shadow:0 18px 35px #5b443421; }
+.landing-feature-icon { display:flex;align-items:center;justify-content:center;width:47px;height:47px;border-radius:14px;background:#e9decd;color:#76543e; }
+.landing-feature-number { position:absolute;top:35px;right:30px;color:#b9a992;font-family:Georgia,serif;font-size:14px; }
+.landing-trust { background:#eee4d6;color:#4d3c2d;border-top:1px solid #ded2c1; }
+.landing-footer { background:linear-gradient(to bottom,#eee4d6 0 78px,#624631 78px);color:#f9f1e8; }
+.landing-footer a { transition:color .2s,transform .2s; }.landing-footer a:hover { color:#fff; }
+.landing-footer .flex-col a { color:#eadfd1;font-size:14px; }.landing-footer .flex-col a:hover { color:#fff; }
+.landing-footer-cta { display:inline-flex;align-items:center;gap:8px;border-bottom:1px solid #e9d5bc;padding-bottom:6px;font-size:14px;font-weight:600; }
+.landing-wave { position:absolute;left:-50%;width:200%;height:130px;top:5px;border-radius:50% 50% 0 0/65% 65% 0 0; }
+.landing-wave-back { top:0;background:#a88d71;animation:landing-wave-sway 12s ease-in-out infinite alternate; }
+.landing-wave-front { top:22px;background:#624631;animation:landing-wave-sway 9s ease-in-out infinite alternate-reverse; }
+@keyframes landing-image-drift { from { transform:scale(1); } to { transform:scale(1.055) translateX(-1%); } }
+@keyframes landing-wave-sway { from { transform:translateX(-2%) rotate(-1deg); } to { transform:translateX(2%) rotate(1deg); } }
+@media (max-width:900px) { .landing-hero-wash { background:linear-gradient(90deg,rgba(248,239,220,.97),rgba(248,239,220,.86) 60%,rgba(248,239,220,.35)); } }
+@media (max-width:640px) { .landing-hero-image { background-position:62% center;opacity:.58; }.landing-hero-wash { background:linear-gradient(90deg,rgba(248,239,220,.93),rgba(248,239,220,.77)); }.landing-hero-bottom { height:28px; }.landing-wave { width:300%;left:-100%; } }
