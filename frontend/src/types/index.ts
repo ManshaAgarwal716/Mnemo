@@ -43,9 +43,12 @@ export interface Source {
 }
 
 export interface MessageSource {
-  document_id: string;
+  document_id?: string | null;
+  note_id?: string | null;
   title: string;
-  file_name: string;
+  file_name?: string | null;
+  source_type?: "note" | "document" | null;
+  excerpt?: string | null;
 }
 
 export interface Message {

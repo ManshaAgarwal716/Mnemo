@@ -10,6 +10,7 @@ from src.db.base import Base
 
 if TYPE_CHECKING:
     from src.projects.model import Project
+    from src.notes.chunk import NoteChunk
 
 
 class Note(Base):
@@ -47,7 +48,11 @@ class Note(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
+    indexed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     project: Mapped["Project"] = relationship(
         back_populates="notes",
+    )
+    chunks: Mapped[list["NoteChunk"]] = relationship(
+        "NoteChunk", back_populates="note", cascade="all, delete-orphan"
     )

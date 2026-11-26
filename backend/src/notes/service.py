@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.notes.model import Note
+from src.notes.indexing import index_note
 from src.notes.repository import note_repository
 from src.notes.schema import (
     NoteCreate,
@@ -25,10 +26,16 @@ class NoteService:
             project_id=project_id,
         )
 
-        return await note_repository.create(
-            db,
-            note,
-        )
+        try:
+            db.add(note)
+            await db.flush()
+            await index_note(db, note)
+            await db.commit()
+            await db.refresh(note)
+            return note
+        except Exception:
+            await db.rollback()
+            raise
 
     async def get_notes(
         self,
@@ -80,10 +87,15 @@ class NoteService:
                 value,
             )
 
-        return await note_repository.update(
-            db,
-            note,
-        )
+        try:
+            if "title" in update_data or "content" in update_data:
+                await index_note(db, note)
+            await db.commit()
+            await db.refresh(note)
+            return note
+        except Exception:
+            await db.rollback()
+            raise
 
     async def delete_note(
         self,

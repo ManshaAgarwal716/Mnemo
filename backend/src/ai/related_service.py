@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conversations.model import Conversation
 from src.messages.service import message_service
-from src.notes.model import Note
 from src.retrieval.service import retrieval_service
 
 
@@ -15,6 +14,7 @@ class RelatedService:
         self,
         db: AsyncSession,
         conversation_id: uuid.UUID,
+        owner_id: uuid.UUID,
     ) -> dict:
 
         # Get all messages in the conversation
@@ -51,6 +51,7 @@ class RelatedService:
             await retrieval_service.retrieve_chunks(
                 db=db,
                 project_id=conversation.project_id,
+                owner_id=owner_id,
                 question=latest_message,
             )
         )
@@ -84,16 +85,22 @@ class RelatedService:
                 }
             )
 
-        # Notes (still keyword based for now)
-        note_result = await db.execute(
-            select(Note)
-            .where(
-                Note.project_id == conversation.project_id,
-            )
-            .limit(5)
+        note_results = await retrieval_service.retrieve_note_chunks(
+            db, conversation.project_id, owner_id, latest_message
         )
-
-        notes = note_result.scalars().all()
+        notes = []
+        seen_notes = set()
+        for item in note_results:
+            note = item["note"]
+            if note.id in seen_notes:
+                continue
+            seen_notes.add(note.id)
+            notes.append({
+                "id": str(note.id), "title": note.title,
+                "project_id": str(note.project_id),
+                "snippet": item["chunk"].content[:150],
+                "similarity": item["similarity"],
+            })
 
         # Other conversations (temporary implementation)
         conversation_result = await db.execute(
@@ -109,20 +116,7 @@ class RelatedService:
 
         return {
             "documents": documents,
-            "notes": [
-                {
-                    "id": str(note.id),
-                    "title": note.title,
-                    "project_id": str(note.project_id),
-                    "snippet": (
-                        note.content[:150] + "..."
-                        if len(note.content) > 150
-                        else note.content
-                    ),
-                    "similarity": 80,
-                }
-                for note in notes
-            ],
+            "notes": notes,
             "conversations": [
                 {
                     "id": str(conv.id),

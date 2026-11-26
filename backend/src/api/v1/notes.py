@@ -1,3 +1,4 @@
+from src.security.ownership import require_note, require_project
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -30,6 +31,8 @@ async def create_note(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_project(db, project_id, current_user.id)
+
     try:
         return await note_service.create_note(
             db,
@@ -53,6 +56,8 @@ async def get_notes(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_project(db, project_id, current_user.id)
+
     return await note_service.get_notes(
         db,
         project_id,
@@ -68,6 +73,8 @@ async def get_note(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_note(db, note_id, current_user.id)
+
     try:
         return await note_service.get_note(
             db,
@@ -91,6 +98,8 @@ async def update_note(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_note(db, note_id, current_user.id)
+
     try:
         return await note_service.update_note(
             db,
@@ -114,6 +123,8 @@ async def delete_note(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_note(db, note_id, current_user.id)
+
     try:
         await note_service.delete_note(
             db,

@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { FileText, StickyNote } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 
 import { MessageSource } from "@/types";
@@ -16,9 +16,8 @@ export function SourceChips({
   const router = useRouter();
   const params = useParams();
 
-  const projectId = params.projectId as string;
-
-  const { openDocument } = useWorkspaceStore();
+  const { openDocument, openNote, activeProjectId } = useWorkspaceStore();
+  const projectId = (params.projectId as string) || activeProjectId;
 
   return (
     <div className="space-y-2">
@@ -29,22 +28,24 @@ export function SourceChips({
       <div className="flex flex-wrap gap-2">
         {sources.map((source) => (
           <button
-            key={source.document_id}
+            key={source.note_id || source.document_id}
             type="button"
+            title={source.excerpt || source.title}
             onClick={() => {
-              openDocument(
-                source.document_id,
-                source.title,
-              );
+              if (source.note_id) {
+                openNote(source.note_id, source.title);
+              } else if (source.document_id) {
+                openDocument(source.document_id, source.title);
+              }
 
-              router.push(`/workspace/${projectId}`);
+              if (projectId) router.push(`/workspace/${projectId}`);
             }}
             className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs shadow-sm transition hover:border-primary hover:bg-primary-light"
           >
-            <FileText className="h-3.5 w-3.5 text-primary" />
+            {source.note_id ? <StickyNote className="h-3.5 w-3.5 text-primary" /> : <FileText className="h-3.5 w-3.5 text-primary" />}
 
             <span className="max-w-[180px] truncate">
-              {source.title}
+              {source.note_id ? "Note" : "Document"}: {source.title}
             </span>
           </button>
         ))}

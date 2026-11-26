@@ -1,3 +1,4 @@
+from src.security.ownership import require_conversation
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -26,18 +27,27 @@ async def chat(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_conversation(db, request.conversation_id, current_user.id)
+
 
     try:
         return await ai_service.chat(
             db=db,
             conversation_id=request.conversation_id,
             prompt=request.message,
+            owner_id=current_user.id,
+            scope=request.scope,
+            note_ids=request.note_ids,
+            document_ids=request.document_ids,
+            active_note_id=request.active_note_id,
         )
 
-    except Exception as e:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(
             status_code=500,
-            detail=str(e),
+            detail="AI request failed. Please try again later.",
         )
 
 
@@ -47,6 +57,8 @@ async def get_summary(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_conversation(db, conversation_id, current_user.id)
+
 
     try:
         return await summary_service.generate_summary(
@@ -67,11 +79,14 @@ async def get_related(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    await require_conversation(db, conversation_id, current_user.id)
+
 
     try:
         return await related_service.find_related_content(
             db,
             conversation_id,
+            current_user.id,
         )
 
     except Exception as e:

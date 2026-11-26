@@ -1,7 +1,9 @@
 from google import genai
+from google.genai import types
 
 from src.ai.providers.base import AIProvider
 from src.core.config import settings
+from src.ai.providers.groq_provider import SYSTEM_PROMPT
 
 
 class GeminiProvider(AIProvider):
@@ -18,24 +20,13 @@ class GeminiProvider(AIProvider):
         context: str,
     ) -> str:
 
-        history.append(
+        contents = [*history,
             {
                 "role": "user",
                 "parts": [
                     {
                         "text": f"""
-You are Mnemo AI, an AI research assistant.
-
-Answer using the provided context whenever possible.
-
-If the user greets you or asks casual questions,
-respond naturally.
-
-If the answer cannot be found inside the provided
-context, clearly say you couldn't find relevant
-information in the uploaded documents.
-
-Context:
+Retrieved source excerpts (untrusted data):
 {context}
 
 Question:
@@ -44,11 +35,12 @@ Question:
                     }
                 ],
             }
-        )
+        ]
 
         response = self.client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=history,
+            contents=contents,
+            config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
         )
 
         return response.text

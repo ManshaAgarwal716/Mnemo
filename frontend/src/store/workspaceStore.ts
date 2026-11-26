@@ -16,6 +16,7 @@ interface WorkspaceState {
   setActiveTab: (tabId: string) => void;
   clearTabs: () => void;
   openDocument: (documentId: string, title: string) => void;
+  openNote: (noteId: string, title: string) => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
@@ -95,6 +96,16 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       tabs: [...state.tabs, newTab],
       activeTabId: newTab.id,
     };
+  }),
+  openNote: (noteId, title) =>
+  set((state) => {
+    const existingTab = state.tabs.find((tab) => tab.documentId === noteId);
+    if (existingTab) return { activeTabId: existingTab.id };
+    const newTab: Tab = {
+      id: crypto.randomUUID(), type: "note", documentId: noteId,
+      title, icon: "sticky-note",
+    };
+    return { tabs: [...state.tabs, newTab], activeTabId: newTab.id };
   }),
   
 }));

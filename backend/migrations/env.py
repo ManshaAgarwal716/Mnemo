@@ -12,6 +12,7 @@ from src.documents.model import Document
 from src.conversations.model import Conversation
 from src.messages.model import Message
 from src.notes.model import Note
+from src.notes.chunk import NoteChunk
 
 config = context.config
 

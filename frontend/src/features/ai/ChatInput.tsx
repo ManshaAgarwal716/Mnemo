@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useChatStore } from "@/store/chatStore";
+import { useWorkspaceStore } from "@/store/workspaceStore";
 
 interface ChatInputProps {
   conversationId: string;
@@ -12,8 +13,11 @@ interface ChatInputProps {
 
 export function ChatInput({ conversationId }: ChatInputProps) {
   const [input, setInput] = useState("");
+  const [scope, setScope] = useState<"project" | "all">("project");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
+  const { tabs, activeTabId } = useWorkspaceStore();
+  const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
   const {
     setIsStreaming,
@@ -30,6 +34,8 @@ export function ChatInput({ conversationId }: ChatInputProps) {
       const response = await api.post("/ai/chat", {
         conversation_id: conversationId,
         message,
+        active_note_id: activeTab?.type === "note" ? activeTab.documentId : undefined,
+        scope,
       });
 
       const aiResponse = response.data.response;
@@ -87,6 +93,13 @@ export function ChatInput({ conversationId }: ChatInputProps) {
       onSubmit={handleSubmit}
       className="border-t border-gray-200 p-3"
     >
+      <div className="mb-2 flex items-center justify-between gap-2 text-xs text-gray-500">
+        <span>{activeTab?.type === "note" ? `Open note: ${activeTab.title}` : "Ask across your knowledge"}</span>
+        <select aria-label="AI knowledge scope" value={scope} onChange={(event) => setScope(event.target.value as "project" | "all")} className="rounded border border-gray-200 bg-white px-2 py-1 text-xs">
+          <option value="project">This project</option>
+          <option value="all">All projects</option>
+        </select>
+      </div>
       <div className="flex items-end gap-2">
         <textarea
           ref={textareaRef}
@@ -98,7 +111,7 @@ export function ChatInput({ conversationId }: ChatInputProps) {
               handleSubmit(e);
             }
           }}
-          placeholder="Ask about your documents..."
+          placeholder="Ask about your notes and documents..."
           rows={1}
           className="flex-1 max-h-32 resize-none rounded border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
           disabled={sendMutation.isPending}

@@ -1,7 +1,6 @@
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.ai.providers.gemini_provider import GeminiProvider
 from src.ai.providers.groq_provider import GroqProvider
 from src.core.config import settings
 from src.ai.providers.gemini_provider import GeminiProvider
@@ -91,6 +90,11 @@ class AIService:
         db: AsyncSession,
         conversation_id: uuid.UUID,
         prompt: str,
+        owner_id: uuid.UUID,
+        scope: str = "project",
+        note_ids: list[uuid.UUID] | None = None,
+        document_ids: list[uuid.UUID] | None = None,
+        active_note_id: uuid.UUID | None = None,
     ) -> ChatResponse:
 
         conversation = await conversation_service.get_conversation(
@@ -105,51 +109,67 @@ class AIService:
 
         is_first_message = len(messages) == 0
 
-        await self.save_user_message(
-            db,
-            conversation_id,
-            prompt,
-        )
-
-        chunks = await retrieval_service.retrieve_chunks(
+        chunks = await retrieval_service.retrieve_context(
             db=db,
             project_id=conversation.project_id,
+            owner_id=owner_id,
             question=prompt,
+            scope=scope,
+            note_ids=note_ids,
+            document_ids=document_ids,
+            active_note_id=active_note_id,
         )
 
-        context = "\n".join(
-    item["chunk"].content
-    for item in chunks
-)
+        # Keep the evidence and citations aligned when the retrieved set is large.
+        selected = []
+        context_parts = []
+        context_length = 0
+        for item in chunks:
+            resource = item["document"] if item["kind"] == "document" else item["note"]
+            part = f"[{item['kind'].title()}: {resource.title}]\n{item['chunk'].content}"
+            if context_length + len(part) > 48000:
+                break
+            selected.append(item)
+            context_parts.append(part)
+            context_length += len(part)
+        context = "\n\n".join(context_parts)
+        if len(selected) < len(chunks):
+            context += "\n\n[Some matching content was omitted due to context length. Do not claim a complete summary.]"
 
         sources = []
         seen = set()
 
-        for item in chunks:
-            document = item["document"]
-            if document.id in seen:
+        for item in selected:
+            resource = item["document"] if item["kind"] == "document" else item["note"]
+            if (item["kind"], resource.id) in seen:
                 continue
 
-            seen.add(document.id)
+            seen.add((item["kind"], resource.id))
 
             sources.append(
                 Source(
-                    document_id=document.id,
-                    title=document.title,
-                    file_name=document.file_name,
+                    document_id=resource.id if item["kind"] == "document" else None,
+                    note_id=resource.id if item["kind"] == "note" else None,
+                    title=resource.title,
+                    file_name=resource.file_name if item["kind"] == "document" else None,
+                    source_type=item["kind"],
+                    excerpt=item["chunk"].content[:220],
                 )
             )
 
-        history = await self.build_history(
-            db,
-            conversation_id,
-        )
+        history = [
+            {"role": "user" if message.role == MessageRole.USER else "model",
+             "parts": [{"text": message.content}]}
+            for message in messages
+        ]
 
-        response = await self.provider.generate(
-            history,
-            prompt,
-            context,
-        )
+        await self.save_user_message(db, conversation_id, prompt)
+
+        casual = prompt.casefold().strip().rstrip("!?.") in {"hi", "hello", "hey", "thanks", "thank you"}
+        if not selected and not casual:
+            response = "I couldn't find enough relevant information in your saved notes or documents to answer that. Try naming a note or project, or add more detail to the source."
+        else:
+            response = await self.provider.generate(history, prompt, context)
 
         await self.save_ai_message(
             db,
